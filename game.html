@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+       <title>Collisions - Physijs</title>
+       
+
+       
+             <script type="text/javascript" src="js/babylon.1.8.5.js"></script>
+
+         <style type="text/css">
+   html, body, canvas {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+    }
+
+	.dir{
+	   background-color: #ffffff;
+	   position: absolute;
+	   font-family:"Times New Roman";
+	   font-size:12px;
+	   font-weight:bold;
+	   min-width:200px;
+	   text-align:center;
+	   right: 5px;
+	   top: 5px;
+	   opacity:0.5;
+	   text-align:center;
+	 	border:2px solid #888888;
+	 	border-radius:5px;
+	}
+
+	.mainFont{
+		font-family: 'Montserrat', sans-serif;
+ 	   font-size:20px;
+ 	   font-weight:bold;
+	   color:#888888;
+	}
+	.mainFontLarge{
+		font-family: 'Montserrat', sans-serif;
+ 	   font-size:100px;
+ 	   font-weight:bold;
+	   color:#888888;
+	}
+	
+	.mainFontSmall{
+		font-family: 'Montserrat', sans-serif;
+ 	   font-size:12px;
+ 	   font-weight:bold;
+	   color:#888888;
+	}
+
+	.bottomMiddle{
+		position:fixed;
+		bottom:5px; 
+		left:50%;
+		margin-left:-300px;
+		z-index:5;
+		padding:5px;
+		text-align:center;
+	}
+	
+	.bottomRight{
+		position:fixed;
+		bottom:5px; 
+		right:10px;
+		padding:1px;
+	}
+	
+	.topLeft{
+		position:fixed;
+		top:10px; 
+		left:10px;
+		padding:1px;
+	}
+
+	.center{
+		position:absolute;
+		top:50%;
+		left:50%;
+		text-align:center;
+	}
+	
+	#deadScreen{
+        margin-left:-300px;
+		margin-top:-100px;
+		color:red;
+	    display:none;
+	}
+
+	.topMiddle{
+		position:fixed;
+		top:10px; 
+		left:50%;
+		margin-left:-100px;
+		padding:1px;
+	   text-align:center;
+	}
+
+	.gauge{
+	    width:200px;
+	    height:30px;
+	    	padding:5px;
+	    opacity:0.5;
+	  border:2px solid #888888;
+	  border-radius:5px;
+	}
+
+	.statusGaugeInside{
+		background-color:red;
+		height:30px;
+	}
+	
+	.largeGauge{
+	    width:600px;
+	    height:30px;
+	    	padding:5px;
+	    opacity:0.5;
+	  border:2px solid #888888;
+	  border-radius:5px;
+	}
+
+	.statusScreen{
+	    width:800px;
+	    height:600px;
+	    	padding:5px;
+	    opacity:0.8;
+	  border:2px solid #888888;
+	  border-radius:5px;
+  		color:#ffffff;
+      background-color: #000000;
+	  margin-left:-400px;
+	margin-top:-300px;
+	  display:none;
+	}
+       </style>
+
+</head>
+
+<body>
+	<div class="dir" id="dir">test</div>
+	<div class="topLeft mainFont">Resources:<div id="Resources">0</div></div>
+	<div class="topMiddle mainFont">Light Speed Gauge<div class="gauge"><div class="statusGaugeInside" id="lightspeedGauge"></div></div></div>
+	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
+	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><button onclick="SceneSetup();">Try it</button></div>
+	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont">(Press R to restart)</div></div>
+	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
+          <canvas id="viewport"></canvas>
+		  
+
+</body>
+
+       <script type="text/javascript">
+var loaded = false;
+	var level = 0, healthIncrease=5;
+     var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
+	 var player, playerStats, rock, enemyexplosion,bulletobj;
+     var canvas = document.getElementById("viewport");
+	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
+	 var ResourcesText  = document.getElementById('Resources');
+	 var HealthGauge  = document.getElementById('healthGauge');
+	 var levelScreen  = document.getElementById('nextLevelScreen');
+	  var HealthStat = document.getElementById('healthstat');
+	 var LevelText  = document.getElementById('level');
+	 var StatusText  = document.getElementById('dir');
+	 var DeathScreen = document.getElementById('deadScreen');
+	 
+     
+     var engine = new BABYLON.Engine(canvas,true)
+     
+	playerStats = new PlayerStats();
+	SceneSetup();
+
+
+	function SceneSetup()
+	{
+		levelScreen.style.display = "none";
+		if(scene != null)
+		{
+			scene.dispose();
+		}
+		LevelText.innerHTML = level;
+		DeathScreen.style.display = "none";
+		loaded = false;
+		skybox = null;
+		skyboxMaterial = null;
+		movex=0, movez=0, movey=0;
+		enemies=[];
+		time = 0;
+		
+		scene = new BABYLON.Scene(engine);
+		scene.clearColor = new BABYLON.Color3(0,0,0);
+        camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 600, new BABYLON.Vector3(0, 0, 0), scene);
+  	    camera.maxZ = 20000;
+	   
+ 	  // var camera2 = new BABYLON.ArcRotateCamera("Camera2", 0, 0, 1000, new BABYLON.Vector3(0, 0, 0), scene);
+	   //  	    camera2.maxZ = 20000;
+ 	  // camera2.viewport = new BABYLON.Viewport(0.8,0.8,.2,.2);
+ 	  
+ 	  //  scene.activeCameras.push(camera);
+	   // scene.activeCameras.push(camera2);
+	   
+	   
+	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
+	   
+        BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
+           newMeshes[0].scaling.x = .015;
+           newMeshes[0].scaling.y = .015;
+           newMeshes[0].scaling.z = .015;
+           playerGraphic = newMeshes[0];
+   		   player = new Player();
+
+   		   camera.target = player.BoundingBox.position;
+   	  	   loaded = true;
+     	});
+		
+        BABYLON.SceneLoader.ImportMesh("", "", "assets/a6.babylon", scene, function (newMeshes, particleSystems) {
+        		rock =  newMeshes[0];
+  	  	  	rock.scaling.x = 20;
+  	  	  	rock.scaling.y = 20;
+  	  	  	rock.scaling.z = 20;
+			rock.position.x = 750;
+			rock.position.z = 750;
+
+			
+	        var enemyCount = 100;
+	        while(enemyCount--) {
+	    		 enemies.push(new Enemy());
+	        }
+        });
+		
+
+		
+	   light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
+		
+ 	   skybox = BABYLON.Mesh.CreateBox("skyBox", 1500.0, scene);
+ 	   skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+ 	   skyboxMaterial.backFaceCulling = false;
+ 	   skybox.material = skyboxMaterial;
+ 	   skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+ 	   skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+ 	   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
+ 	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+	  // skybox.isVisible = false;
+	   //scene.activeCamera.attachControl(canvas);
+       enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
+
+      //Texture of each particle
+      enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+	   // Where the particles comes from
+   enemyexplosion.emitter = skybox; // the starting object, the emitter
+   enemyexplosion.minEmitBox = new BABYLON.Vector3(-1, 0, -1); // Starting all From
+   enemyexplosion.maxEmitBox = new BABYLON.Vector3(1, 0, 1); // To...
+
+   // Colors of all particles (splited in 2 + specific color before dispose)
+   enemyexplosion.color1 = new BABYLON.Color4(1.0, 0.8, 1.0, 1.0);
+   enemyexplosion.color2 = new BABYLON.Color4(0.8, 0.6, 1.0, 1.0);
+   enemyexplosion.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+
+   // Size of each particle (random between...
+   enemyexplosion.minSize = 2.0;
+   enemyexplosion.maxSize = 5.5;
+
+   // Life time of each particle (random between...
+   enemyexplosion.minLifeTime = .25;
+   enemyexplosion.maxLifeTime = .550;
+
+   // Emission rate
+   enemyexplosion.emitRate = 15000;
+   // OR
+   //particleSystem.manualEmitCount = 1000;
+
+
+   // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+   enemyexplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+
+   //Set the gravity of all particles (not necessary down)
+  // enemyexplosion.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+   //Direction of each particle after it has been emitted
+   enemyexplosion.direction1 = new BABYLON.Vector3(-8, -8, 0);
+   enemyexplosion.direction2 = new BABYLON.Vector3(8, 8, 0);
+
+   //angular speed, in radian
+   enemyexplosion.minAngularSpeed = 0;
+   enemyexplosion.maxAngularSpeed = Math.PI;
+
+   enemyexplosion.targetStopDuration = .1;
+
+   //speed
+   enemyexplosion.minEmitPower = 60;
+   enemyexplosion.maxEmitPower = 75;
+   enemyexplosion.updateSpeed = 0.005;
+
+   //dispose
+   enemyexplosion.disposeOnStop = true;
+
+   //Start the particle system
+   //enemyexplosion.start();
+	   
+   
+	  
+	}
+
+
+	function UpgradeStat(type, amount){
+		if(type=="Health"){
+			playerStats.maxHealth += amount;
+			HealthStat.innerHTML = playerStats.maxHealth;
+		}
+	}
+
+	function Reset(){
+		scene.dispose();
+		level =0;
+		SceneSetup();
+	}
+     
+ 
+	function PlayerStats(){
+		this.Resources = 0;
+		this.maxHealth = 1000000;
+		this.ShipCapacity = 1000;
+		this.speed = 1;
+		this.bulletSpeed = 3;
+		this.bulletDamage = 5;
+	}
+	
+	
+	function DummyMovement(obj)
+	{
+	  var x = ((Math.random()*1500)-750);
+	  var z = ((Math.random()*1500)-750);
+	  
+      var movementbox = new BABYLON.Animation("movementbox", "position", (Math.random()*25)+5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+      // Animation keys
+      var keys = [];
+      //At the animation key 0, the value of scaling is "1"
+      keys.push({
+          frame: 0,
+          value: obj.position
+      });
+
+      //At the animation key 100, the value of scaling is "1"
+      keys.push({
+          frame: 400,
+          value: new BABYLON.Vector3(x,0,z)
+      });
+	  
+      keys.push({
+          frame: 800,
+          value: new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750))
+      });
+	  
+      keys.push({
+          frame: 1200,
+          value: new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750))
+      });
+	  
+      keys.push({
+          frame: 1500,
+          value: obj.position
+      });
+
+      //Pluging the sequence of keys to the animation object
+      movementbox.setKeys(keys);
+	  
+	   obj.animations.push(movementbox);
+	  
+	  
+	   scene.beginAnimation(obj, 0, 1500, true);
+	}
+
+	function Player(){
+		this.playerStats = playerStats;
+		this.LightSpeedGauge = 90;
+		this.Resources = playerStats.Resources;
+		
+		this.LightSpeedGaugeCapacity = 100;
+		this.ShipCapacity = 1000;
+		this.health = playerStats.maxHealth;
+		this.maxHealth = playerStats.maxHealth;
+		this.shipSheildCap = 0;
+		this.speed = playerStats.speed;
+		this.bulletSpeed = 3;
+		this.bulletDamage = 5;
+		var bulletsshot = 0;
+		
+		this.bullet = [];//  BABYLON.Mesh.CreateSphere("bullet", 2,2, scene);
+		var totalBullets = 100;
+        while(totalBullets--) {
+			var newbullet = bulletobj.clone("bullet");
+			newbullet.isVisible = false;
+    	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage':25});
+        }
+		
+		lightSpeedGauge.style.width = 0;
+		ResourcesText.innerHTML =  this.playerStats.Resources + "/" + this.ShipCapacity;
+		HealthGauge.style.width = "100%"; 
+		
+		
+		this.BoundingBox = BABYLON.Mesh.CreateBox("Player", 13.0, scene);
+   	  	var material = new BABYLON.StandardMaterial("texture1", scene);
+        material.wireframe = true;
+		this.BoundingBox.material = material;
+		this.BoundingBox.isVisible = false;
+		this.Graphic = playerGraphic;
+		
+
+          particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
+
+         //Texture of each particle
+         particleSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+		   // Where the particles comes from
+      particleSystem.emitter = this.Graphic; // the starting object, the emitter
+      particleSystem.minEmitBox = new BABYLON.Vector3(-100, 100, 700); // Starting all From
+      particleSystem.maxEmitBox = new BABYLON.Vector3(100, 100, 800); // To...
+    //  particleSystem.minEmitBox = new BABYLON.Vector3(-1, 1, 0); // Starting all From
+    //  particleSystem.maxEmitBox = new BABYLON.Vector3(1, 1, 0); // To...
+
+      // Colors of all particles (splited in 2 + specific color before dispose)
+      particleSystem.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
+      particleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+      particleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+
+      // Size of each particle (random between...
+      particleSystem.minSize = 1.0;
+      particleSystem.maxSize = 7.5;
+
+      // Life time of each particle (random between...
+      particleSystem.minLifeTime = 0.01;
+      particleSystem.maxLifeTime = .25;
+
+      // Emission rate
+      particleSystem.emitRate = 1500;
+      // OR
+      //particleSystem.manualEmitCount = 1000;
+
+
+      // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+      particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+
+      //Set the gravity of all particles (not necessary down)
+      particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+      //Direction of each particle after it has been emitted
+      particleSystem.direction1 = new BABYLON.Vector3(-7, 8, 3);
+      particleSystem.direction2 = new BABYLON.Vector3(7, 8, -3);
+
+      //angular speed, in radian
+      particleSystem.minAngularSpeed = 0;
+      particleSystem.maxAngularSpeed = Math.PI;
+
+      particleSystem.targetStopDuration = 0;
+
+      //speed
+      particleSystem.minEmitPower = 1;
+      particleSystem.maxEmitPower = 3;
+      particleSystem.updateSpeed = 0.005;
+
+      //dispose
+      particleSystem.disposeOnStop = true;
+
+      //Start the particle system
+      particleSystem.start();
+
+
+	  
+	this.explode = function(){
+			if (this.Graphic._isEnabled == true){
+			this.Graphic.isVisible = false;
+			this.Graphic._isEnabled = false;
+			
+            explosionSystem = new BABYLON.ParticleSystem("particlesexplode", 2000, scene);
+
+           //Texture of each particle
+           explosionSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+  		   // Where the particles comes from
+        explosionSystem.emitter = this.BoundingBox; // the starting object, the emitter
+        explosionSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0); // Starting all From
+        explosionSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0); // To...
+
+        // Colors of all particles (splited in 2 + specific color before dispose)
+        explosionSystem.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
+        explosionSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+        explosionSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+
+        // Size of each particle (random between...
+        explosionSystem.minSize = 6.0;
+        explosionSystem.maxSize = 7.5;
+
+        // Life time of each particle (random between...
+        explosionSystem.minLifeTime = 0.15;
+        explosionSystem.maxLifeTime = 1.15;
+
+        // Emission rate
+        explosionSystem.emitRate = 50000;
+        // OR
+        //particleSystem.manualEmitCount = 1000;
+
+
+        // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
+        explosionSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+
+        //Set the gravity of all particles (not necessary down)
+        explosionSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+        //Direction of each particle after it has been emitted
+        explosionSystem.direction1 = new BABYLON.Vector3(-8, 8, 8);
+        explosionSystem.direction2 = new BABYLON.Vector3(8, 8, -8);
+
+        //angular speed, in radian
+        explosionSystem.minAngularSpeed = 0;
+        explosionSystem.maxAngularSpeed = Math.PI;
+
+        explosionSystem.targetStopDuration = .1;
+
+        //speed
+        explosionSystem.minEmitPower = 1;
+        explosionSystem.maxEmitPower = 100;
+        explosionSystem.updateSpeed = 0.005;
+
+        //dispose
+        explosionSystem.disposeOnStop = true;
+
+        //Start the particle system
+        explosionSystem.start();
+		//this.BoundingBox.position.y +=-100
+		DeathScreen.style.display = "block";
+	    ////show you died and request reset/start over
+	}
+			
+		}
+		
+		this.Damage = function(intDamage)
+		{
+			this.health -= intDamage;
+			HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
+			
+		 if(this.health <= 0){
+			 HealthGauge.style.width =  "0%"; 
+			 this.explode();
+		 } 
+	 
+		}
+		
+		
+		this.shoot = function(){
+		  if(this.Graphic._isEnabled == true){
+			 bulletsshot +=1;
+			var basebullet = bulletobj.clone("bullet" + bulletsshot);
+			basebullet.material = this.material;
+			basebullet.position.z = this.Graphic.position.z;
+			basebullet.position.x = this.Graphic.position.x;
+			
+			bulletpart = particleSystem.clone("bulleting", basebullet);
+	        bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
+	        bulletpart.maxEmitBox = new BABYLON.Vector3(0, 1, 0); // To...
+	        bulletpart.direction1 = new BABYLON.Vector3(-100, -100, -100);
+	        bulletpart.direction2 = new BABYLON.Vector3(100, 100, 100);
+		    bulletpart.maxLifeTime = .1;
+			bulletpart.maxSize = 5.5;
+			//bulletpart.minSize = 10.0;
+			
+			if(this.Graphic.rotation.y==Math.PI){
+				this.bullet.push({'graphic': basebullet, 'direction':'right', 'damage':25});
+			}
+			else if(this.Graphic.rotation.y==0){
+				this.bullet.push({'graphic': basebullet, 'direction':'left', 'damage':25});
+			}
+			else if(this.Graphic.rotation.y==(Math.PI/2)){
+				this.bullet.push({'graphic': basebullet, 'direction':'up', 'damage':25});
+			}
+			else{
+				this.bullet.push({'graphic': basebullet, 'direction':'down', 'damage':25});
+			}
+		  }
+		}
+		
+		this.update = function(){
+		 if(this.health <= 0){
+			 this.explode();
+		 } 
+		 if(this.Graphic._isEnabled == true){
+	  	  this.Graphic.position.x += movex;
+	  	  this.Graphic.position.z += movez;
+	  	  this.Graphic.position.y += movey;
+	  	  this.BoundingBox.position.x = this.Graphic.position.x;
+	  	  this.BoundingBox.position.z = this.Graphic.position.z;
+	      }
+		    if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
+		    	lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
+		    }
+			else
+			{
+				lightSpeedGauge.style.width = 100 + "%";
+				ResourcesText.innerHTML = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity) + "/" + this.ShipCapacity;
+				this.playerStats.Resources = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity);
+				
+			}
+
+			var totalB = this.bullet.length;
+			while(totalB--){
+				if (this.bullet[totalB].direction == "right")
+				{
+						this.bullet[totalB].graphic.position.z += this.bulletSpeed;
+				}
+				else if (this.bullet[totalB].direction == "left")
+				{
+					this.bullet[totalB].graphic.position.z += -this.bulletSpeed;
+				}
+				else if (this.bullet[totalB].direction == "up")
+				{
+					this.bullet[totalB].graphic.position.x += -this.bulletSpeed;
+				}
+				else if (this.bullet[totalB].direction == "down")
+				{
+					this.bullet[totalB].graphic.position.x += this.bulletSpeed;
+				}
+				
+			}
+			
+		}
+	}
+	/////////////////////////////////////////////////////////////////
+      scene.activeCamera.attachControl(canvas);
+	  ////////////////////////////////////////////////////////////////
+	  
+	function Enemy(){
+		var baseHealth = 50;
+		this.level = level;
+		this.health = baseHealth + (this.level*healthIncrease);
+		this.maxHealth = baseHealth + (this.level*healthIncrease);
+
+		  this.enemy = rock.clone("Enemy");//BABYLON.Mesh.CreateBox("Enemy", (Math.random()*15)+15, scene);
+		  
+		  
+		 var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
+		  rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
+		  rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
+		 // this.enemy.receiveShadows = true;
+		  var sizing = (Math.random()*15)+20
+ 	  	  	this.enemy.scaling.x = sizing;
+ 	  	  	this.enemy.scaling.y = sizing;
+ 	  	  	this.enemy.scaling.z = sizing;
+	       //rockmaterial.wireframe = true;  
+		   //rockmaterial.emissiveColor = new BABYLON.Color3(.0, .0, .0);
+		   //rockmaterial.backFaceCulling = false;
+	      rockmaterial.diffuseTexture.uScale = .5;
+	       rockmaterial.diffuseTexture.vScale = .5;
+		   this.enemy.material = rockmaterial;
+		  
+	      var animationBox = new BABYLON.Animation("tutoAnimation", "rotation.x", Math.random()*20, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+	      // Animation keys
+	      var keys = [];
+	      //At the animation key 0, the value of scaling is "1"
+	      keys.push({
+	          frame: 0,
+	          value: 0
+	      });
+
+	      //At the animation key 20, the value of scaling is "0.2"
+	      keys.push({
+	          frame: 50,
+	          value: 3.12
+	      });
+
+	      //At the animation key 100, the value of scaling is "1"
+	      keys.push({
+	          frame: 100,
+	          value: 6.25
+	      });
+
+	      //Pluging the sequence of keys to the animation object
+	      animationBox.setKeys(keys);
+
+	      //Then add the animation object to the box1/box2
+	      this.enemy.animations.push(animationBox);
+		  
+	      var animationBox2 = new BABYLON.Animation("tutoAnimation", "rotation.z", Math.random()*20, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+	      // Animation keys
+	      var keys = [];
+	      //At the animation key 0, the value of scaling is "1"
+	      keys.push({
+	          frame: 0,
+	          value: 0
+	      });
+
+	      //At the animation key 20, the value of scaling is "0.2"
+	      keys.push({
+	          frame: 50,
+	          value: 3.12
+	      });
+
+	      //At the animation key 100, the value of scaling is "1"
+	      keys.push({
+	          frame: 100,
+	          value: 6.25
+	      });
+
+	      //Pluging the sequence of keys to the animation object
+	      animationBox2.setKeys(keys);
+		  
+		   this.enemy.animations.push(animationBox2);
+		  
+		  
+		   scene.beginAnimation(this.enemy, 0, 100, true);
+		   
+		  var movementSpeed = (Math.random()*1.0)+.05;
+		  var targetingSpeed = (Math.random()*10)+2;
+		  var targetingAccuracy = (Math.random()*100);
+		  
+		  var aquiredtargetX = this.enemy.position.x;
+		  var aquiredtargetZ = this.enemy.position.z;
+		  var lastupdate = 0;
+		  var currenttime;
+		  var rando = Math.round(Math.random()*1);
+		  var x = ((Math.random()*1500)-750);
+		  var z = ((Math.random()*1500)-750);
+		  if (rando == 1)
+		  {
+			  if (x > 0){
+			  	x = 800;
+			  }
+			  else
+			  {
+				  x=-800;
+			  }	
+		  }
+		  else
+		  {
+			  if (z > 0){
+			  	z = 800;
+			  }
+			  else
+			  {
+				  z=-800;
+			  }	
+		  }
+		  this.enemy.position.x = x;
+		  this.enemy.position.z = z;
+		  
+		  DummyMovement(this.enemy);
+		  
+		  this.respawn = function(){
+    			this.enemy.isVisible = true;
+    			this.enemy._isEnabled = true;
+			  this.level += 1;
+			  this.health = baseHealth + (this.level*healthIncrease);
+			  this.maxHealth = this.health;
+			  
+			  rando = Math.round(Math.random()*1);
+			  x = ((Math.random()*1500)-750);
+			  z = ((Math.random()*1500)-750);
+			  if (rando == 1)
+			  {
+				  if (x > 0){
+				  	x = 800;
+				  }
+				  else
+				  {
+					  x=-800;
+				  }	
+			  }
+			  else
+			  {
+				  if (z > 0){
+				  	z = 800;
+				  }
+				  else
+				  {
+					  z=-800;
+				  }	
+			  }
+			  this.enemy.position.x = x;
+			  this.enemy.position.z = z;
+ 			 DummyMovement(this.enemy);
+			
+		  }
+		  
+		  this.explode = function()
+		  {
+			
+  			if (this.enemy._isEnabled == true){
+  				player.LightSpeedGauge += 5;
+				this.enemy.animations = [];
+				this.enemy.setEnabled(false);
+			    this.enemy.isVisible = false;
+		  	    this.enemy._isEnabled = false;
+			
+			
+  		  var background = BABYLON.Mesh.CreatePlane("background", 20, scene, false);
+  		  background.material = new BABYLON.StandardMaterial("background", scene);
+		  background.position.x = this.enemy.position.x;
+		  background.position.z = this.enemy.position.z;
+		  background.rotation.y = Math.PI;
+		  background.rotation.x = Math.PI/2;
+		  background.rotation.z = Math.PI + (Math.PI/2);
+
+  		  var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+  		  background.material.diffuseTexture = backgroundTexture;
+
+  		  backgroundTexture.drawText("+5", null, 350, "bold 370px Segoe UI", "white", "#555555");
+		  enemyexplosion.clone("enemyblowedup", background)
+		  
+	      var animationBox3 = new BABYLON.Animation("tutoAnimation3", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+
+	      // Animation keys
+	      var keys = [];
+	      //At the animation key 0, the value of scaling is "1"
+	      keys.push({
+	          frame: 0,
+	          value: 1.0
+	      });
+
+	      //At the animation key 20, the value of scaling is "0.2"
+	      keys.push({
+	          frame: 50,
+	          value: .5
+	      });
+
+	      //At the animation key 100, the value of scaling is "1"
+	      keys.push({
+	          frame: 100,
+	          value: .0
+	      });
+
+	      //Pluging the sequence of keys to the animation object
+	      animationBox3.setKeys(keys);
+	  	  background.animations.push(animationBox3);
+	  
+	        var animationBox4 = new BABYLON.Animation("tutoAnimation4", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+
+	        // Animation keys
+	        var keys = [];
+	        //At the animation key 0, the value of scaling is "1"
+	        keys.push({
+	            frame: 0,
+	            value: .0
+	        });
+
+	        //At the animation key 20, the value of scaling is "0.2"
+	        keys.push({
+	            frame: 50,
+	            value: -100
+	        });
+
+	        //At the animation key 100, the value of scaling is "1"
+	        keys.push({
+	            frame: 100,
+	            value: -200
+	        });
+
+	        //Pluging the sequence of keys to the animation object
+	        animationBox4.setKeys(keys);
+	    	  background.animations.push(animationBox4);
+	  
+	  	 scene.beginAnimation(background, 0, 100, false);
+		  	this.respawn();
+		  
+	  }
+	  }
+		  
+	this.Damage = function(intDamage)
+	{
+		this.health -= intDamage;
+		//enemyexplosion.clone("enemyblowedup", this.enemy);
+	 if(this.health <= 0){
+		 this.explode();
+	 } 
+	}
+		  
+		  this.update = function(targetX, targetZ){
+			 
+			 if(this.health <= 0){
+				 this.explode();
+			 } 
+			 
+			 /*
+			  if((time-lastupdate) > targetingSpeed)
+			  {
+				  aquiredtargetX = ((Math.random()*1500)-750); //targetX;
+				  aquiredtargetZ = ((Math.random()*1500)-750);// targetZ;
+			  	  lastupdate = time;
+			  }
+	          if(this.enemy.position.x > aquiredtargetX){
+	              this.enemy.position.x -= movementSpeed; 
+	          }
+	          else if(this.enemy.position.x < aquiredtargetX)
+	          {
+	              this.enemy.position.x += movementSpeed;
+	          }
+	          if(this.enemy.position.z > aquiredtargetZ){
+	              this.enemy.position.z -= movementSpeed; 
+	          }
+	          else if(this.enemy.position.z < aquiredtargetZ)
+	          {
+	              this.enemy.position.z += movementSpeed;
+	          }
+			 */
+		  }
+	}  
+	  
+	  
+	function UserInterface(){
+		
+	}
+	  
+
+	  scene.registerBeforeRender(function() {
+		  if (scene.isReady()){}
+	  });
+
+
+  // Once the scene is loaded, just register a render loop to render it
+  engine.runRenderLoop(function () {
+	  time= time+(1/BABYLON.Tools.GetFps());
+	  StatusText.innerHTML = BABYLON.Tools.GetFps();
+	  if(loaded==true){
+		  player.update();
+
+
+
+		  /////////check for collisions/////////////////////
+	  enemiesCount = enemies.length;
+	  while(enemiesCount--){
+		  bulletCount = player.bullet.length;
+		  	   enemies[enemiesCount].update(player.Graphic.position.x,player.Graphic.position.z);
+		  while(bulletCount--){
+			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,false)){
+				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
+				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
+			
+					player.bullet[bulletCount].graphic.dispose(false);
+					player.bullet.splice(bulletCount,1)
+				  }
+			  }
+			  else if(player.bullet[bulletCount].graphic.intersectsMesh(skybox, false) == false){
+				//player.bullet[bulletCount].graphic._isEnabled=false;
+				//player.bullet[bulletCount].graphic.isVisible=false;
+				player.bullet[bulletCount].graphic.dispose(false);
+				player.bullet.splice(bulletCount,1)
+			  }
+		  }
+		  
+		  
+		  if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,false)==true)
+		  {
+			if(enemies[enemiesCount].enemy.isVisible == true){
+				 player.Damage(enemies[enemiesCount].health/2);
+				 enemies[enemiesCount].Damage(player.maxHealth/2);
+			}
+			
+		  	//StatusText.innerHTML = "hit";
+		  }
+
+	  }
+	  ////////////////////complete collisions/////////////
+  }
+    scene.render();
+  });
+
+
+   document.onkeydown = handleKeyDown;
+   document.onmousedown = handleMouseDown;
+  // window.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+  function handleMouseDown()
+  {
+	  player.shoot();
+  }
+
+  function handleKeyDown(event) {
+    if(event.keyCode == 68){
+      if(loaded==true){
+         player.Graphic.rotation.y = Math.PI; 
+		 movez = player.speed; // need stat on player object
+		 movex = 0;
+      }
+    }
+    if(event.keyCode == 65){
+      if(loaded==true){
+         player.Graphic.rotation.y = 0; 
+		 movez = -player.speed;// need stat on player object
+		 movex = 0;
+      }
+    }
+   if(event.keyCode == 87){
+      if(loaded==true){
+         player.Graphic.rotation.y = Math.PI/2; 
+		 movex = -player.speed;// need stat on player object
+		 movez = 0;
+      }
+    }
+    if(event.keyCode == 83){
+      if(loaded==true){
+         player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
+		 movex = player.speed;// need stat on player object
+		 movez = 0;
+      }
+  }
+  if(event.keyCode == 82){
+    if(player.LightSpeedGauge >= player.LightSpeedGaugeCapacity && player.health > 0){
+		
+		movex=0;
+		movez=0;
+		
+
+  	    player.Graphic.position.y += -100;
+  	    player.BoundingBox.position.y +=-100
+		
+        var animationBox3 = new BABYLON.Animation("tutoAnimation3", "radius", 80, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+        // Animation keys
+        var Camerakeys = [];
+        //At the animation key 0, the value of scaling is "1"
+        Camerakeys.push({
+            frame: 0,
+            value: camera.radius
+        });
+
+        //At the animation key 20, the value of scaling is "0.2"
+        Camerakeys.push({
+            frame: 50,
+            value: 50
+        });
+
+        //At the animation key 100, the value of scaling is "1"
+        Camerakeys.push({
+            frame: 100,
+            value: 25
+        });
+
+        //Pluging the sequence of keys to the animation object
+        animationBox3.setKeys(Camerakeys);
+    	camera.animations.push(animationBox3);
+	 	player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
+     	player.Graphic.rotation.y = (Math.PI/2); 
+		
+		scene.beginAnimation(camera, 0, 100, false, 0, function(){
+   			// player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
+   		    // player.Graphic.rotation.y = (Math.PI/2); 
+
+	        var shiplightspeedMove = new BABYLON.Animation("shiplightspeedMove", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+	        // Animation keys
+	        var shipkeys = [];
+	        //At the animation key 0, the value of scaling is "1"
+	        shipkeys.push({
+	            frame: 0,
+	            value: player.Graphic.position.y
+	        });
+
+	        //At the animation key 20, the value of scaling is "0.2"
+	        shipkeys.push({
+	            frame: 25,
+	            value: player.Graphic.position.y - 1000
+	        });
+
+	        //At the animation key 100, the value of scaling is "1"
+	        shipkeys.push({
+	            frame: 100,
+	            value: player.Graphic.position.y - 13000
+	        });
+
+	        //Pluging the sequence of keys to the animation object
+	        shiplightspeedMove.setKeys(shipkeys);
+	    	player.Graphic.animations.push(shiplightspeedMove);
+			scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
+					levelScreen.style.display = "block";
+					HealthStat.innerHTML = player.maxHealth;
+				//scene.dispose();
+				level +=1;
+				
+				//SceneSetup();
+			});
+   		   		//movey = -30;
+			
+				//scene.dispose();
+			
+		});	
+    }
+	else{
+		Reset();
+	}
+}
+  if(event.keyCode == 32){
+		player.shoot();
+  }
+}
+
+       </script>
+</html>
