@@ -2,7 +2,7 @@
 <html>
 
 <head>
-       <title>Collisions - Physijs</title>
+       <title>Light Speed Ready</title>
        
 
        
@@ -145,7 +145,7 @@
 	<div class="topLeft mainFont">Resources:<div id="Resources">0</div></div>
 	<div class="topMiddle mainFont">Light Speed Gauge<div class="gauge"><div class="statusGaugeInside" id="lightspeedGauge"></div></div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
-	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><button onclick="SceneSetup();">Try it</button></div>
+	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><button onclick="SceneSetup();">Next Level</button></div>
 	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont">(Press R to restart)</div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
           <canvas id="viewport"></canvas>
@@ -322,7 +322,7 @@ var loaded = false;
  
 	function PlayerStats(){
 		this.Resources = 0;
-		this.maxHealth = 1000000;
+		this.maxHealth = 100;
 		this.ShipCapacity = 1000;
 		this.speed = 1;
 		this.bulletSpeed = 3;
@@ -378,7 +378,7 @@ var loaded = false;
 
 	function Player(){
 		this.playerStats = playerStats;
-		this.LightSpeedGauge = 90;
+		this.LightSpeedGauge = 0;
 		this.Resources = playerStats.Resources;
 		
 		this.LightSpeedGaugeCapacity = 100;
@@ -392,13 +392,7 @@ var loaded = false;
 		var bulletsshot = 0;
 		
 		this.bullet = [];//  BABYLON.Mesh.CreateSphere("bullet", 2,2, scene);
-		var totalBullets = 100;
-        while(totalBullets--) {
-			var newbullet = bulletobj.clone("bullet");
-			newbullet.isVisible = false;
-    	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage':25});
-        }
-		
+
 		lightSpeedGauge.style.width = 0;
 		ResourcesText.innerHTML =  this.playerStats.Resources + "/" + this.ShipCapacity;
 		HealthGauge.style.width = "100%"; 
@@ -469,7 +463,22 @@ var loaded = false;
       //Start the particle system
       particleSystem.start();
 
-
+	var totalBullets = 100;
+      while(totalBullets--) {
+		var newbullet = bulletobj.clone("bullet");
+		newbullet.position.x = 1500;
+		newbullet.position.z = 1500;
+		newbullet.isVisible = false;
+		bulletpart = particleSystem.clone("bulleting", newbullet);
+        bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
+        bulletpart.maxEmitBox = new BABYLON.Vector3(0, 1, 0); // To...
+        bulletpart.direction1 = new BABYLON.Vector3(-100, -100, -100);
+        bulletpart.direction2 = new BABYLON.Vector3(100, 100, 100);
+	    bulletpart.maxLifeTime = .1;
+		bulletpart.maxSize = 5.5;
+  	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage':25});
+      }
+	
 	  
 	this.explode = function(){
 			if (this.Graphic._isEnabled == true){
@@ -553,6 +562,11 @@ var loaded = false;
 		this.shoot = function(){
 		  if(this.Graphic._isEnabled == true){
 			 bulletsshot +=1;
+			this.bullet[bulletsshot].graphic.isVisible = true;
+			this.bullet[bulletsshot].graphic.setEnabled(true);
+ 			this.bullet[bulletsshot].graphic.position.z = this.Graphic.position.z;
+ 			this.bullet[bulletsshot].graphic.position.x = this.Graphic.position.x;
+			 /*
 			var basebullet = bulletobj.clone("bullet" + bulletsshot);
 			basebullet.material = this.material;
 			basebullet.position.z = this.Graphic.position.z;
@@ -566,18 +580,25 @@ var loaded = false;
 		    bulletpart.maxLifeTime = .1;
 			bulletpart.maxSize = 5.5;
 			//bulletpart.minSize = 10.0;
-			
+			*/
 			if(this.Graphic.rotation.y==Math.PI){
-				this.bullet.push({'graphic': basebullet, 'direction':'right', 'damage':25});
+				this.bullet[bulletsshot].direction = 'right';
+				//this.bullet.push({'graphic': basebullet, 'direction':'right', 'damage':25});
 			}
 			else if(this.Graphic.rotation.y==0){
-				this.bullet.push({'graphic': basebullet, 'direction':'left', 'damage':25});
+				this.bullet[bulletsshot].direction = 'left';
+				//this.bullet.push({'graphic': basebullet, 'direction':'left', 'damage':25});
 			}
 			else if(this.Graphic.rotation.y==(Math.PI/2)){
-				this.bullet.push({'graphic': basebullet, 'direction':'up', 'damage':25});
+				this.bullet[bulletsshot].direction = 'up';
+				//this.bullet.push({'graphic': basebullet, 'direction':'up', 'damage':25});
 			}
 			else{
-				this.bullet.push({'graphic': basebullet, 'direction':'down', 'damage':25});
+				this.bullet[bulletsshot].direction = 'down';
+				//this.bullet.push({'graphic': basebullet, 'direction':'down', 'damage':25});
+			}
+			if (bulletsshot >= 99){
+				bulletsshot=0;
 			}
 		  }
 		}
@@ -942,16 +963,17 @@ var loaded = false;
 				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
 				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
 			
-					player.bullet[bulletCount].graphic.dispose(false);
-					player.bullet.splice(bulletCount,1)
+					player.bullet[bulletCount].graphic.isVisible = false; 
+					player.bullet[bulletCount].graphic.setEnabled(false);
+					//player.bullet.splice(bulletCount,1)
 				  }
 			  }
-			  else if(player.bullet[bulletCount].graphic.intersectsMesh(skybox, false) == false){
+			  //else if(player.bullet[bulletCount].graphic.intersectsMesh(skybox, false) == false){
 				//player.bullet[bulletCount].graphic._isEnabled=false;
 				//player.bullet[bulletCount].graphic.isVisible=false;
-				player.bullet[bulletCount].graphic.dispose(false);
-				player.bullet.splice(bulletCount,1)
-			  }
+				//player.bullet[bulletCount].graphic.dispose(false);
+			//	player.bullet.splice(bulletCount,1)
+			  //}
 		  }
 		  
 		  
