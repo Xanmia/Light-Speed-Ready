@@ -13,7 +13,16 @@
 	<div class="topLeft mainFont">Resources:<div id="Resources">0</div></div>
 	<div class="topMiddle mainFont">Light Speed Gauge<div class="gauge"><div class="statusGaugeInside" id="lightspeedGauge"></div></div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
-	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><button onclick="SceneSetup();">Next Level</button></div>
+	
+	
+	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>
+		Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><br/>
+		Damage<button onclick="UpgradeStat('Damage', 1);">+</button><div id="damagestat"></div><button onclick="UpgradeStat('Damage', -1);">-</button><br/>
+		Ship Speed<button onclick="UpgradeStat('Speed', 1);">+</button><div id="speedstat"></div><button onclick="UpgradeStat('Speed', -1);">-</button><br/>
+		Capacity<button onclick="UpgradeStat('Capacity', 1);">+</button><div id="capacitystat"></div><button onclick="UpgradeStat('Capacity', -1);">-</button><br/>
+		
+		<button onclick="SceneSetup();">Next Level</button></div>
+	
 	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont">(Press R to restart)</div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
           <canvas id="viewport"></canvas>
@@ -32,6 +41,9 @@ var loaded = false;
 	 var HealthGauge  = document.getElementById('healthGauge');
 	 var levelScreen  = document.getElementById('nextLevelScreen');
 	  var HealthStat = document.getElementById('healthstat');
+	  var DamageStat = document.getElementById('damagestat');
+	  var SpeedStat = document.getElementById('speedstat');
+	  var CapacityStat = document.getElementById('capacitystat');
 	 var LevelText  = document.getElementById('level');
 	 var StatusText  = document.getElementById('dir');
 	 var DeathScreen = document.getElementById('deadScreen');
@@ -179,6 +191,18 @@ var loaded = false;
 			playerStats.maxHealth += amount;
 			HealthStat.innerHTML = playerStats.maxHealth;
 		}
+		if(type=="Damage"){
+			playerStats.bulletDamage += amount;
+			DamageStat.innerHTML = playerStats.bulletDamage;
+		}
+		if(type=="Speed"){
+			playerStats.speed += amount;
+			SpeedStat.innerHTML = playerStats.speed;
+		}
+		if(type=="Capacity"){
+			playerStats.ShipCapacity += amount;
+			CapacityStat.innerHTML = playerStats.ShipCapacity;
+		}
 	}
 
 	function Reset(){
@@ -194,7 +218,7 @@ var loaded = false;
 		this.ShipCapacity = 1000;
 		this.speed = 1;
 		this.bulletSpeed = 3;
-		this.bulletDamage = 5;
+		this.bulletDamage = 25;
 	}
 	
 	
@@ -247,16 +271,16 @@ var loaded = false;
 	function Player(){
 		this.playerStats = playerStats;
 		this.LightSpeedGauge = 0;
-		this.Resources = playerStats.Resources;
+		this.Resources = 0;
 		
 		this.LightSpeedGaugeCapacity = 100;
-		this.ShipCapacity = 1000;
+		this.ShipCapacity = playerStats.ShipCapacity;
 		this.health = playerStats.maxHealth;
 		this.maxHealth = playerStats.maxHealth;
 		this.shipSheildCap = 0;
 		this.speed = playerStats.speed;
 		this.bulletSpeed = 3;
-		this.bulletDamage = 5;
+		this.bulletDamage = playerStats.bulletDamage;
 		var bulletsshot = 0;
 		
 		this.bullet = [];//  BABYLON.Mesh.CreateSphere("bullet", 2,2, scene);
@@ -334,8 +358,8 @@ var loaded = false;
 	var totalBullets = 100;
       while(totalBullets--) {
 		var newbullet = bulletobj.clone("bullet");
-		newbullet.position.x = 1500;
-		newbullet.position.z = 1500;
+		newbullet.position.x = 15000;
+		newbullet.position.z = 15000;
 		newbullet.isVisible = false;
 		bulletpart = particleSystem.clone("bulleting", newbullet);
         bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
@@ -344,7 +368,8 @@ var loaded = false;
         bulletpart.direction2 = new BABYLON.Vector3(100, 100, 100);
 	    bulletpart.maxLifeTime = .1;
 		bulletpart.maxSize = 5.5;
-  	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage':25});
+		//bulletpart.targetStopDuration = 2;
+  	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage': this.bulletDamage});
       }
 	
 	  
@@ -517,7 +542,7 @@ var loaded = false;
 		}
 	}
 	/////////////////////////////////////////////////////////////////
-      scene.activeCamera.attachControl(canvas);
+     // scene.activeCamera.attachControl(canvas);
 	  ////////////////////////////////////////////////////////////////
 	  
 	function Enemy(){
@@ -830,7 +855,8 @@ var loaded = false;
 			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,false)){
 				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
 				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
-			
+					//player.bullet[bulletCount].graphic.position.x = 15000;
+					//player.bullet[bulletCount].graphic.position.z = 15000;
 					player.bullet[bulletCount].graphic.isVisible = false; 
 					player.bullet[bulletCount].graphic.setEnabled(false);
 					//player.bullet.splice(bulletCount,1)
@@ -863,13 +889,10 @@ var loaded = false;
 
 
    document.onkeydown = handleKeyDown;
-   document.onmousedown = handleMouseDown;
+  // document.onmousedown = handleMouseDown;
   // window.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
-  function handleMouseDown()
-  {
-	  player.shoot();
-  }
+
 
   function handleKeyDown(event) {
     if(event.keyCode == 68){
@@ -969,7 +992,12 @@ var loaded = false;
 	    	player.Graphic.animations.push(shiplightspeedMove);
 			scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
 					levelScreen.style.display = "block";
+					
 					HealthStat.innerHTML = player.maxHealth;
+					playerStats.Resources = player.Resources;
+					DamageStat.innerHTML = player.bulletDamage;
+					SpeedStat.innerHTML = player.speed;
+					CapacityStat.innerHTML = player.ShipCapacity;
 				//scene.dispose();
 				level +=1;
 				
