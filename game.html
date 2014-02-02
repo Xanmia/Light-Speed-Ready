@@ -25,7 +25,7 @@
 		
 		<button ng-click="save();">Save and go to next level</button></div>
 	
-	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont">(Press R to restart)</div></div>
+	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onclick="Reset();">--New Game--</button></div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
           <canvas id="viewport"></canvas>
 		  
@@ -245,6 +245,7 @@ var loaded = false;
 	}
 */
 	function Reset(){
+		playerStats = new PlayerStats();
 		scene.dispose();
 		level =0;
 		SceneSetup();
@@ -1056,9 +1057,7 @@ var loaded = false;
 			
 		});	
     }
-	else{
-		Reset();
-	}
+
 }
   if(event.keyCode == 32){
 		player.shoot();
