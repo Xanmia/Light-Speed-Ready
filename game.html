@@ -51,6 +51,10 @@ var loaded = false;
 	 var StatusText  = document.getElementById('dir');
 	 var DeathScreen = document.getElementById('deadScreen');
 	 var shootaudio = new Audio("assets/shoot2.wav");
+	 var lightspeedaudio = new Audio("assets/lightspeed.wav");
+	 		 lightspeedaudio.volume = .5;
+	 var lightspeedstartaudio = new Audio("assets/lightspeedstart.wav");
+	 lightspeedstartaudio.volume = .5;
 	// var explodeaudio = new Audio("assets/explosion.wav");  
      var engine = new BABYLON.Engine(canvas,true)
      
@@ -1012,11 +1016,11 @@ var loaded = false;
     	camera.animations.push(animationBox3);
 	 	player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
      	player.Graphic.rotation.y = (Math.PI/2); 
-		
+		lightspeedstartaudio.play();
 		scene.beginAnimation(camera, 0, 100, false, 0, function(){
    			// player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
    		    // player.Graphic.rotation.y = (Math.PI/2); 
-
+	lightspeedaudio.play();
 	        var shiplightspeedMove = new BABYLON.Animation("shiplightspeedMove", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
 	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 	        // Animation keys
@@ -1042,6 +1046,7 @@ var loaded = false;
 	        //Pluging the sequence of keys to the animation object
 	        shiplightspeedMove.setKeys(shipkeys);
 	    	player.Graphic.animations.push(shiplightspeedMove);
+
 			scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
 					levelScreen.style.display = "block";
 					//levelingSystem.updateResources(123);// = 123;
