@@ -20,7 +20,7 @@
 		Next Level!<br/>Resources to Spend:{{Resources}}<br/>
 		Health<button ng-click="UpgradeStat('Health', 1, 5);">+</button>{{maxHealth}}<button ng-click="UpgradeStat('Health', -1, -5);">-</button><br/>
 		Damage<button ng-click="UpgradeStat('Damage', 1, 10);">+</button>{{bulletDamage}} <button ng-click="UpgradeStat('Damage', -1, -10);">-</button><br/>
-		Ship Speed<button ng-click="UpgradeStat('Speed', 1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -1, -50);">-</button><br/>
+		Ship Speed<button ng-click="UpgradeStat('Speed', .1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -.1, -50);">-</button><br/>
 		Capacity<button ng-click="UpgradeStat('Capacity', 1, 1);">+</button>{{ShipCapacity}} <button ng-click="UpgradeStat('Capacity', -1, -1);">-</button><br/>
 		
 		<button ng-click="save();">Save and go to next level</button></div>
@@ -73,6 +73,7 @@ var loaded = false;
 			}
 			if(type=="Speed"){
 				$scope.speed += amount;
+				$scope.speed = Math.round($scope.speed*100)/100;  
 			}
 			if(type=="Capacity"){
 				$scope.ShipCapacity += amount;
@@ -255,7 +256,7 @@ var loaded = false;
 		this.maxHealth = 100;
 		this.ShipCapacity = 1000;
 		this.speed = 1;
-		this.bulletSpeed = 3;
+		this.bulletSpeed = 2;
 		this.bulletDamage = 25;
 	}
 	
@@ -308,7 +309,7 @@ var loaded = false;
 
 	function Player(){
 		this.playerStats = playerStats;
-		this.LightSpeedGauge =100;
+		this.LightSpeedGauge =0;
 		this.Resources = 0;
 		
 		this.LightSpeedGaugeCapacity = 100;
@@ -317,7 +318,7 @@ var loaded = false;
 		this.maxHealth = playerStats.maxHealth;
 		this.shipSheildCap = 0;
 		this.speed = playerStats.speed;
-		this.bulletSpeed = 3;
+		this.bulletSpeed = playerStats.bulletSpeed;
 		this.bulletDamage = playerStats.bulletDamage;
 		var bulletsshot = 0;
 		
@@ -560,19 +561,19 @@ var loaded = false;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
 				{
-						this.bullet[totalB].graphic.position.z += this.bulletSpeed;
+						this.bullet[totalB].graphic.position.z += this.speed + this.bulletSpeed;
 				}
 				else if (this.bullet[totalB].direction == "left")
 				{
-					this.bullet[totalB].graphic.position.z += -this.bulletSpeed;
+					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed);
 				}
 				else if (this.bullet[totalB].direction == "up")
 				{
-					this.bullet[totalB].graphic.position.x += -this.bulletSpeed;
+					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed);
 				}
 				else if (this.bullet[totalB].direction == "down")
 				{
-					this.bullet[totalB].graphic.position.x += this.bulletSpeed;
+					this.bullet[totalB].graphic.position.x += this.speed + this.bulletSpeed;
 				}
 				
 			}
