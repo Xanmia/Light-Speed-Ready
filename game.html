@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html ng-app>
 
 <head>
      <title>-Light Speed Ready-</title>
      <script type="text/javascript" src="js/babylon.1.8.5.js"></script>
+	 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
 	 <link rel="stylesheet" href="style/ScreenLayout.css" type="text/css" charset="utf-8">
 
 </head>
@@ -15,13 +16,14 @@
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
 	
 	
-	<div class="center mainFont statusScreen" id="nextLevelScreen">Next Level!<br/>
-		Health<button onclick="UpgradeStat('Health', 1);">+</button><div id="healthstat"></div><button onclick="UpgradeStat('Health', -1);">-</button><br/>
-		Damage<button onclick="UpgradeStat('Damage', 1);">+</button><div id="damagestat"></div><button onclick="UpgradeStat('Damage', -1);">-</button><br/>
-		Ship Speed<button onclick="UpgradeStat('Speed', 1);">+</button><div id="speedstat"></div><button onclick="UpgradeStat('Speed', -1);">-</button><br/>
-		Capacity<button onclick="UpgradeStat('Capacity', 1);">+</button><div id="capacitystat"></div><button onclick="UpgradeStat('Capacity', -1);">-</button><br/>
+	<div ng-controller="levelingSystem" class="center mainFont statusScreen" id="nextLevelScreen">
+		Next Level!<br/>Resources to Spend:{{Resources}}<br/>
+		Health<button ng-click="UpgradeStat('Health', 1, 5);">+</button>{{maxHealth}}<button ng-click="UpgradeStat('Health', -1, -5);">-</button><br/>
+		Damage<button ng-click="UpgradeStat('Damage', 1, 10);">+</button>{{bulletDamage}} <button ng-click="UpgradeStat('Damage', -1, -10);">-</button><br/>
+		Ship Speed<button ng-click="UpgradeStat('Speed', 1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -1, -50);">-</button><br/>
+		Capacity<button ng-click="UpgradeStat('Capacity', 1, 1);">+</button>{{ShipCapacity}} <button ng-click="UpgradeStat('Capacity', -1, -1);">-</button><br/>
 		
-		<button onclick="SceneSetup();">Next Level</button></div>
+		<button ng-click="save();">Save and go to next level</button></div>
 	
 	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont">(Press R to restart)</div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
@@ -40,10 +42,11 @@ var loaded = false;
 	 var ResourcesText  = document.getElementById('Resources');
 	 var HealthGauge  = document.getElementById('healthGauge');
 	 var levelScreen  = document.getElementById('nextLevelScreen');
-	  var HealthStat = document.getElementById('healthstat');
+	 /* var HealthStat = document.getElementById('healthstat');
 	  var DamageStat = document.getElementById('damagestat');
 	  var SpeedStat = document.getElementById('speedstat');
 	  var CapacityStat = document.getElementById('capacitystat');
+	 */
 	 var LevelText  = document.getElementById('level');
 	 var StatusText  = document.getElementById('dir');
 	 var DeathScreen = document.getElementById('deadScreen');
@@ -52,6 +55,41 @@ var loaded = false;
      var engine = new BABYLON.Engine(canvas,true)
      
 	playerStats = new PlayerStats();
+	
+	var levelingSystem =function($scope) {
+		$scope.maxHealth = playerStats.maxHealth;
+		$scope.ShipCapacity = playerStats.ShipCapacity;
+		$scope.speed = playerStats.speed;
+		$scope.bulletDamage = playerStats.bulletDamage;
+		$scope.Resources = playerStats.Resources;
+	
+		$scope.UpgradeStat = function (type, amount, cost)
+		{
+			if(type=="Health"){
+				$scope.maxHealth += amount;
+			}
+			if(type=="Damage"){
+				$scope.bulletDamage += amount;
+			}
+			if(type=="Speed"){
+				$scope.speed += amount;
+			}
+			if(type=="Capacity"){
+				$scope.ShipCapacity += amount;
+			}
+			$scope.Resources -= cost;
+		}
+	
+		$scope.save = function()
+		{
+			playerStats.maxHealth = $scope.maxHealth;
+			playerStats.ShipCapacity = $scope.ShipCapacity;
+			playerStats.speed = $scope.speed;
+			playerStats.bulletDamage = $scope.bulletDamage;
+			SceneSetup();
+		}
+	}
+	
 	SceneSetup();
 
 
@@ -185,7 +223,7 @@ var loaded = false;
 	  
 	}
 
-
+	/*
 	function UpgradeStat(type, amount){
 		if(type=="Health"){
 			playerStats.maxHealth += amount;
@@ -204,7 +242,7 @@ var loaded = false;
 			CapacityStat.innerHTML = playerStats.ShipCapacity;
 		}
 	}
-
+*/
 	function Reset(){
 		scene.dispose();
 		level =0;
@@ -270,7 +308,7 @@ var loaded = false;
 
 	function Player(){
 		this.playerStats = playerStats;
-		this.LightSpeedGauge = 0;
+		this.LightSpeedGauge =100;
 		this.Resources = 0;
 		
 		this.LightSpeedGaugeCapacity = 100;
@@ -514,7 +552,7 @@ var loaded = false;
 			{
 				lightSpeedGauge.style.width = 100 + "%";
 				ResourcesText.innerHTML = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity) + "/" + this.ShipCapacity;
-				this.playerStats.Resources = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity);
+				//this.playerStats.Resources = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity);
 				
 			}
 
@@ -992,12 +1030,20 @@ var loaded = false;
 	    	player.Graphic.animations.push(shiplightspeedMove);
 			scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
 					levelScreen.style.display = "block";
+					//levelingSystem.updateResources(123);// = 123;
 					
+				    var scope = angular.element(levelScreen).scope();
+				    scope.$apply(function(){
+				        scope.Resources = (player.LightSpeedGauge - player.LightSpeedGaugeCapacity);
+				    })
+					
+					/*
 					HealthStat.innerHTML = player.maxHealth;
 					playerStats.Resources = player.Resources;
 					DamageStat.innerHTML = player.bulletDamage;
 					SpeedStat.innerHTML = player.speed;
 					CapacityStat.innerHTML = player.ShipCapacity;
+					*/
 				//scene.dispose();
 				level +=1;
 				
