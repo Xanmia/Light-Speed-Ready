@@ -17,7 +17,7 @@
 	
 	
 	<div ng-controller="levelingSystem" class="center mainFont statusScreen" id="nextLevelScreen">
-		Next Level!<br/>Resources to Spend:{{Resources}}<br/>
+		Upgrade Your Ship -Changing to Level 1-100<br/>Resources to Spend:{{Resources}}<br/> 
 		Health<button ng-click="UpgradeStat('Health', 1, 5);">+</button>{{maxHealth}}<button ng-click="UpgradeStat('Health', -1, -5);">-</button><br/>
 		Damage<button ng-click="UpgradeStat('Damage', 1, 10);">+</button>{{bulletDamage}} <button ng-click="UpgradeStat('Damage', -1, -10);">-</button><br/>
 		Ship Speed<button ng-click="UpgradeStat('Speed', .1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -.1, -50);">-</button><br/>
@@ -50,8 +50,8 @@ var loaded = false;
 	 var LevelText  = document.getElementById('level');
 	 var StatusText  = document.getElementById('dir');
 	 var DeathScreen = document.getElementById('deadScreen');
-	 
-     
+	 var shootaudio = new Audio("assets/shoot2.wav");
+	// var explodeaudio = new Audio("assets/explosion.wav");  
      var engine = new BABYLON.Engine(canvas,true)
      
 	playerStats = new PlayerStats();
@@ -495,6 +495,9 @@ var loaded = false;
 		this.shoot = function(){
 		  if(this.Graphic._isEnabled == true){
 			 bulletsshot +=1;
+			 shootaudio.volume = .1;
+			 shootaudio.play();
+			 
 			this.bullet[bulletsshot].graphic.isVisible = true;
 			this.bullet[bulletsshot].graphic.setEnabled(true);
  			this.bullet[bulletsshot].graphic.position.z = this.Graphic.position.z;
@@ -590,7 +593,7 @@ var loaded = false;
 		this.level = level;
 		this.health = baseHealth + (this.level*healthIncrease);
 		this.maxHealth = baseHealth + (this.level*healthIncrease);
-
+	 var explodeaudio = new Audio("assets/explosion.wav");  
 		  this.enemy = rock.clone("Enemy");//BABYLON.Mesh.CreateBox("Enemy", (Math.random()*15)+15, scene);
 		  
 		  
@@ -745,6 +748,8 @@ var loaded = false;
 		  {
 			
   			if (this.enemy._isEnabled == true){
+				explodeaudio.volume =.2;
+				explodeaudio.play();
   				player.LightSpeedGauge += 5;
 				this.enemy.animations = [];
 				this.enemy.setEnabled(false);
@@ -963,6 +968,13 @@ var loaded = false;
 		 movez = 0;
       }
   }
+  
+         // player.Graphic.rotation.y = Math.PI/4; //up-and-left
+		 // player.Graphic.rotation.y = Math.PI + Math.PI*.25; //down-and-right
+		 // player.Graphic.rotation.y = Math.PI*.75; //up-and-right
+  		 // player.Graphic.rotation.y = Math.PI + (Math.PI*.75) //down and left
+  
+  
   if(event.keyCode == 82){
     if(player.LightSpeedGauge >= player.LightSpeedGaugeCapacity && player.health > 0){
 		
