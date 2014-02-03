@@ -549,11 +549,30 @@ var loaded = false;
 			 this.explode();
 		 } 
 		 if(this.Graphic._isEnabled == true){
-	  	  this.Graphic.position.x += movex;
-	  	  this.Graphic.position.z += movez;
+			 if(this.Graphic.position.x < 700 && this.Graphic.position.x > -700){
+			 	this.Graphic.position.x += movex;
+				this.BoundingBox.position.x = this.Graphic.position.x;
+			 }
+			 else
+			 {
+ 			 	this.Graphic.position.x += movex * -2;
+				movex = 0;
+ 				this.BoundingBox.position.x = this.Graphic.position.x;
+			 }
+			 if(this.Graphic.position.z < 700 && this.Graphic.position.z > -700){
+			 	this.Graphic.position.z += movez;
+				this.BoundingBox.position.z = this.Graphic.position.z;
+			 }
+			 else
+			 {
+ 			 	this.Graphic.position.z += movez * -2;
+				movez = 0;
+ 				this.BoundingBox.position.z = this.Graphic.position.z;
+			 }
+	  	  //this.Graphic.position.z += movez;
 	  	  this.Graphic.position.y += movey;
-	  	  this.BoundingBox.position.x = this.Graphic.position.x;
-	  	  this.BoundingBox.position.z = this.Graphic.position.z;
+
+	  	  //this.BoundingBox.position.z = this.Graphic.position.z;
 	      }
 		    if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
 		    	lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
