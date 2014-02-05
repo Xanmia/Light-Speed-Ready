@@ -3,9 +3,11 @@
 
 <head>
      <title>-Light Speed Ready-</title>
+	 	 <link rel="stylesheet" href="style/ScreenLayout.css" type="text/css" charset="utf-8">
      <script type="text/javascript" src="js/babylon.1.8.5.js"></script>
+
 	 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
-	 <link rel="stylesheet" href="style/ScreenLayout.css" type="text/css" charset="utf-8">
+
 
 </head>
 
@@ -14,14 +16,20 @@
 	<div class="topLeft mainFont">Resources:<div id="Resources">0</div></div>
 	<div class="topMiddle mainFont">Light Speed Gauge<div class="gauge"><div class="statusGaugeInside" id="lightspeedGauge"></div></div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
-	
+	<div id="boxes" class="bottomLeft">
+	  <div class="box twitter"><img src="images/rocks.jpg" width="1024" height="1024" alt="Rocks">1</div>
+	  <div class="box dribbble">2</div>
+	  <div class="box pinterest">3</div>
+	  <div class="box email">4</div>
+	  <div class="box email">5</div>
+	</div>
 	
 	<div ng-controller="levelingSystem" class="center mainFont statusScreen" id="nextLevelScreen">
 		Upgrade Your Ship -Changing to Level 1-100<br/>Resources to Spend:{{Resources}}<br/> 
-		Health<button ng-click="UpgradeStat('Health', 1, 5);">+</button>{{maxHealth}}<button ng-click="UpgradeStat('Health', -1, -5);">-</button><br/>
-		Damage<button ng-click="UpgradeStat('Damage', 1, 10);">+</button>{{bulletDamage}} <button ng-click="UpgradeStat('Damage', -1, -10);">-</button><br/>
-		Ship Speed<button ng-click="UpgradeStat('Speed', .1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -.1, -50);">-</button><br/>
-		Capacity<button ng-click="UpgradeStat('Capacity', 1, 1);">+</button>{{ShipCapacity}} <button ng-click="UpgradeStat('Capacity', -1, -1);">-</button><br/>
+		Health<button ng-disabled="checkValid(5);" ng-click="UpgradeStat('Health', 1, 5);">+</button>{{maxHealth}}<button ng-click="UpgradeStat('Health', -1, -5);">-</button><br/>
+		Damage<button ng-disabled="checkValid(10);"  ng-click="UpgradeStat('Damage', 1, 10);">+</button>{{bulletDamage}} <button ng-click="UpgradeStat('Damage', -1, -10);">-</button><br/>
+		Ship Speed<button ng-disabled="checkValid(50);" ng-click="UpgradeStat('Speed', .1, 50);">+</button>{{speed}} <button ng-click="UpgradeStat('Speed', -.1, -50);">-</button><br/>
+		Capacity<button ng-disabled="checkValid(1);" ng-click="UpgradeStat('Capacity', 1, 1);">+</button>{{ShipCapacity}} <button ng-click="UpgradeStat('Capacity', -1, -1);">-</button><br/>
 		
 		<button ng-click="save();">Save and go to next level</button></div>
 	
@@ -31,22 +39,18 @@
 		  
 
 </body>
-
+<script src="js/enemies.js" type="text/javascript" ></script>
+<script src="js/enemy.js" type="text/javascript" ></script>
        <script type="text/javascript">
 var loaded = false;
 	var level = 0, healthIncrease=5;
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
-	 var player, playerStats, rock, enemyexplosion,bulletobj;
+	 var player, playerStats, rock, cup, enemyexplosion,bulletobj,box, comet;
      var canvas = document.getElementById("viewport");
 	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
 	 var ResourcesText  = document.getElementById('Resources');
 	 var HealthGauge  = document.getElementById('healthGauge');
 	 var levelScreen  = document.getElementById('nextLevelScreen');
-	 /* var HealthStat = document.getElementById('healthstat');
-	  var DamageStat = document.getElementById('damagestat');
-	  var SpeedStat = document.getElementById('speedstat');
-	  var CapacityStat = document.getElementById('capacitystat');
-	 */
 	 var LevelText  = document.getElementById('level');
 	 var StatusText  = document.getElementById('dir');
 	 var DeathScreen = document.getElementById('deadScreen');
@@ -57,11 +61,11 @@ var loaded = false;
 	 var lightspeedstartaudio = new Audio("assets/lightspeedstart.wav");
 	 lightspeedstartaudio.volume = .5;
 	// var explodeaudio = new Audio("assets/explosion.wav");  
-     var engine = new BABYLON.Engine(canvas,true)
+     var engine = new BABYLON.Engine(canvas,false)
      
 	playerStats = new PlayerStats();
 	
-	var levelingSystem =function($scope) {
+	function levelingSystem($scope) {
 		$scope.maxHealth = playerStats.maxHealth;
 		$scope.ShipCapacity = playerStats.ShipCapacity;
 		$scope.speed = playerStats.speed;
@@ -85,23 +89,29 @@ var loaded = false;
 			}
 			$scope.Resources -= cost;
 		}
-	
+		$scope.checkValid = function(total){
+			if(total>$scope.Resources){return true;}
+		}
 		$scope.save = function()
 		{
 			playerStats.maxHealth = $scope.maxHealth;
 			playerStats.ShipCapacity = $scope.ShipCapacity;
 			playerStats.speed = $scope.speed;
 			playerStats.bulletDamage = $scope.bulletDamage;
-			SceneSetup();
+			playerStats.Resources = $scope.Resources;
+			SceneReset();
 		}
 	}
 	
 	SceneSetup();
 
-
 	function SceneSetup()
 	{
 		levelScreen.style.display = "none";
+		if(engine != null)
+		{
+			engine.dispose()
+		}
 		if(scene != null)
 		{
 			scene.dispose();
@@ -109,32 +119,23 @@ var loaded = false;
 		LevelText.innerHTML = level;
 		DeathScreen.style.display = "none";
 		loaded = false;
-		skybox = null;
-		skyboxMaterial = null;
 		movex=0, movez=0, movey=0;
 		enemies=[];
 		time = 0;
-		
+	    engine = new BABYLON.Engine(canvas,false)
 		scene = new BABYLON.Scene(engine);
 		scene.clearColor = new BABYLON.Color3(0,0,0);
-        camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 600, new BABYLON.Vector3(0, 0, 0), scene);
+        camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 500, new BABYLON.Vector3(0, 0, 0), scene);
   	    camera.maxZ = 20000;
-	   
- 	  // var camera2 = new BABYLON.ArcRotateCamera("Camera2", 0, 0, 1000, new BABYLON.Vector3(0, 0, 0), scene);
-	   //  	    camera2.maxZ = 20000;
- 	  // camera2.viewport = new BABYLON.Viewport(0.8,0.8,.2,.2);
- 	  
- 	  //  scene.activeCameras.push(camera);
-	   // scene.activeCameras.push(camera2);
-	   
-	   
 	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
+	   	//box = BABYLON.Mesh.CreateBox("defaultBox", 10, scene);
 	   
         BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
            newMeshes[0].scaling.x = .015;
            newMeshes[0].scaling.y = .015;
            newMeshes[0].scaling.z = .015;
            playerGraphic = newMeshes[0];
+		   player = undefined;
    		   player = new Player();
 
    		   camera.target = player.BoundingBox.position;
@@ -142,21 +143,35 @@ var loaded = false;
      	});
 		
         BABYLON.SceneLoader.ImportMesh("", "", "assets/a6.babylon", scene, function (newMeshes, particleSystems) {
-        		rock =  newMeshes[0];
-  	  	  	rock.scaling.x = 20;
-  	  	  	rock.scaling.y = 20;
-  	  	  	rock.scaling.z = 20;
-			rock.position.x = 750;
-			rock.position.z = 750;
-
+        	rock =  newMeshes[0];
+			rock.position.x = 850;
+			rock.position.z = 850; 
 			
-	        var enemyCount = 100;
-	        while(enemyCount--) {
-	    		 enemies.push(new Enemy());
-	        }
+   		 	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
+   		 	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
+   		  	rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
+   		  	rockmaterial.specularColor = new BABYLON.Color3(0, 0, 0);		
+     	    rockmaterial.diffuseTexture.uScale = .5;
+     	    rockmaterial.diffuseTexture.vScale = .5;
+   		   //rockmaterial.wireframe = true;
+     		rock.material = rockmaterial;
+			   BABYLON.SceneLoader.ImportMesh("", "", "assets/cup2.babylon", scene, function (newMeshes, particleSystems) {
+           		cup =  newMeshes[0];
+   				cup.position.x = 850;
+   				cup.position.z = 850; 
+	   	        	var enemyCount = 50;
+	   	        	while(enemyCount--) {
+	   				 	enemies.push(new BaseEnemy( enemiesDEF[ 0 ], cup ));
+	   	        	}
+	   	        	 enemyCount = 50;
+	   	        	while(enemyCount--) {
+	   				 	enemies.push(new BaseEnemy( enemiesDEF[ 1 ], rock ));
+	   	        	}
+	   				//enemies.push(new BaseEnemy( enemiesDEF[ 2 ], rock  ));
+			   });
+			
         });
 		
-
 		
 	   light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
 		
@@ -169,93 +184,35 @@ var loaded = false;
  	   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
  	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 	  // skybox.isVisible = false;
-	   //scene.activeCamera.attachControl(canvas);
-       enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
-
-      //Texture of each particle
-      enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
-	   // Where the particles comes from
-   enemyexplosion.emitter = skybox; // the starting object, the emitter
-   enemyexplosion.minEmitBox = new BABYLON.Vector3(-1, 0, -1); // Starting all From
-   enemyexplosion.maxEmitBox = new BABYLON.Vector3(1, 0, 1); // To...
-
-   // Colors of all particles (splited in 2 + specific color before dispose)
-   enemyexplosion.color1 = new BABYLON.Color4(1.0, 0.8, 1.0, 1.0);
-   enemyexplosion.color2 = new BABYLON.Color4(0.8, 0.6, 1.0, 1.0);
-   enemyexplosion.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-
-   // Size of each particle (random between...
-   enemyexplosion.minSize = 2.0;
-   enemyexplosion.maxSize = 5.5;
-
-   // Life time of each particle (random between...
-   enemyexplosion.minLifeTime = .25;
-   enemyexplosion.maxLifeTime = .550;
-
-   // Emission rate
-   enemyexplosion.emitRate = 15000;
-   // OR
-   //particleSystem.manualEmitCount = 1000;
-
-
-   // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
-   enemyexplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-
-   //Set the gravity of all particles (not necessary down)
-  // enemyexplosion.gravity = new BABYLON.Vector3(0, -9.81, 0);
-
-   //Direction of each particle after it has been emitted
-   enemyexplosion.direction1 = new BABYLON.Vector3(-8, -8, 0);
-   enemyexplosion.direction2 = new BABYLON.Vector3(8, 8, 0);
-
-   //angular speed, in radian
-   enemyexplosion.minAngularSpeed = 0;
-   enemyexplosion.maxAngularSpeed = Math.PI;
-
-   enemyexplosion.targetStopDuration = .1;
-
-   //speed
-   enemyexplosion.minEmitPower = 60;
-   enemyexplosion.maxEmitPower = 75;
-   enemyexplosion.updateSpeed = 0.005;
-
-   //dispose
-   enemyexplosion.disposeOnStop = true;
-
-   //Start the particle system
-   //enemyexplosion.start();
-	   
-   
-	  
+//scene.activeCamera.attachControl(canvas);
 	}
 
-	/*
-	function UpgradeStat(type, amount){
-		if(type=="Health"){
-			playerStats.maxHealth += amount;
-			HealthStat.innerHTML = playerStats.maxHealth;
+	function SceneReset()
+	{
+		LevelText.innerHTML = level;
+		camera.radius = 500;
+		ResourcesText.innerHTML =  playerStats.Resources + "/" + player.ShipCapacity;
+		levelScreen.style.display = "none";
+		player.LightSpeedGauge = 0;
+		player.health = player.maxHealth;
+		HealthGauge.style.width = ((player.health / player.maxHealth)*100) + "%"; 
+		player.BoundingBox.position = new BABYLON.Vector3(0,0,0);
+		player.Graphic.position = new BABYLON.Vector3(0,0,0);
+	 	player.Graphic.rotation.x = 0; 
+     	player.Graphic.rotation.y = 0;
+		var totalEnemies = enemies.length;
+		while(totalEnemies--){
+			enemies[totalEnemies].respawn(level);
 		}
-		if(type=="Damage"){
-			playerStats.bulletDamage += amount;
-			DamageStat.innerHTML = playerStats.bulletDamage;
-		}
-		if(type=="Speed"){
-			playerStats.speed += amount;
-			SpeedStat.innerHTML = playerStats.speed;
-		}
-		if(type=="Capacity"){
-			playerStats.ShipCapacity += amount;
-			CapacityStat.innerHTML = playerStats.ShipCapacity;
-		}
+	    camera.target = player.BoundingBox.position;
 	}
-*/
+	
 	function Reset(){
 		playerStats = new PlayerStats();
 		scene.dispose();
 		level =0;
 		SceneSetup();
 	}
-     
  
 	function PlayerStats(){
 		this.Resources = 0;
@@ -266,52 +223,6 @@ var loaded = false;
 		this.bulletDamage = 25;
 	}
 	
-	
-	function DummyMovement(obj)
-	{
-	  var x = ((Math.random()*1500)-750);
-	  var z = ((Math.random()*1500)-750);
-	  
-      var movementbox = new BABYLON.Animation("movementbox", "position", (Math.random()*25)+5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-
-      // Animation keys
-      var keys = [];
-      //At the animation key 0, the value of scaling is "1"
-      keys.push({
-          frame: 0,
-          value: obj.position
-      });
-
-      //At the animation key 100, the value of scaling is "1"
-      keys.push({
-          frame: 400,
-          value: new BABYLON.Vector3(x,0,z)
-      });
-	  
-      keys.push({
-          frame: 800,
-          value: new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750))
-      });
-	  
-      keys.push({
-          frame: 1200,
-          value: new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750))
-      });
-	  
-      keys.push({
-          frame: 1500,
-          value: obj.position
-      });
-
-      //Pluging the sequence of keys to the animation object
-      movementbox.setKeys(keys);
-	  
-	   obj.animations.push(movementbox);
-	  
-	  
-	   scene.beginAnimation(obj, 0, 1500, true);
-	}
 
 	function Player(){
 		this.playerStats = playerStats;
@@ -612,325 +523,6 @@ var loaded = false;
      // scene.activeCamera.attachControl(canvas);
 	  ////////////////////////////////////////////////////////////////
 	  
-	function Enemy(){
-		var baseHealth = 50;
-		this.level = level;
-		this.health = baseHealth + (this.level*healthIncrease);
-		this.maxHealth = baseHealth + (this.level*healthIncrease);
-		 var explodeaudio = new Audio("assets/explosion.wav"); 
-	     var hitaudio = new Audio("assets/hit.wav"); 
-		 hitaudio.volume =.2;
-		  this.enemy = rock.clone("Enemy");//BABYLON.Mesh.CreateBox("Enemy", (Math.random()*15)+15, scene);
-		  
-		  
-		 var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
-		  rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
-		  rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
-		  rockmaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-		 // this.enemy.receiveShadows = true;
-		  var sizing = (Math.random()*15)+20
- 	  	  	this.enemy.scaling.x = sizing;
- 	  	  	this.enemy.scaling.y = sizing;
- 	  	  	this.enemy.scaling.z = sizing;
-	       //rockmaterial.wireframe = true;  
-		   //rockmaterial.emissiveColor = new BABYLON.Color3(.0, .0, .0);
-		   //rockmaterial.backFaceCulling = false;
-	      rockmaterial.diffuseTexture.uScale = .5;
-	       rockmaterial.diffuseTexture.vScale = .5;
-		   this.enemy.material = rockmaterial;
-		  
-	      var animationBox = new BABYLON.Animation("tutoAnimation", "rotation.x", Math.random()*20, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-
-	      // Animation keys
-	      var keys = [];
-	      //At the animation key 0, the value of scaling is "1"
-	      keys.push({
-	          frame: 0,
-	          value: 0
-	      });
-
-	      //At the animation key 20, the value of scaling is "0.2"
-	      keys.push({
-	          frame: 50,
-	          value: 3.12
-	      });
-
-	      //At the animation key 100, the value of scaling is "1"
-	      keys.push({
-	          frame: 100,
-	          value: 6.25
-	      });
-
-	      //Pluging the sequence of keys to the animation object
-	      animationBox.setKeys(keys);
-
-	      //Then add the animation object to the box1/box2
-	      this.enemy.animations.push(animationBox);
-		  
-	      var animationBox2 = new BABYLON.Animation("tutoAnimation", "rotation.z", Math.random()*20, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-
-	      // Animation keys
-	      var keys = [];
-	      //At the animation key 0, the value of scaling is "1"
-	      keys.push({
-	          frame: 0,
-	          value: 0
-	      });
-
-	      //At the animation key 20, the value of scaling is "0.2"
-	      keys.push({
-	          frame: 50,
-	          value: 3.12
-	      });
-
-	      //At the animation key 100, the value of scaling is "1"
-	      keys.push({
-	          frame: 100,
-	          value: 6.25
-	      });
-
-	      //Pluging the sequence of keys to the animation object
-	      animationBox2.setKeys(keys);
-		  
-		   this.enemy.animations.push(animationBox2);
-		  
-		  
-		   scene.beginAnimation(this.enemy, 0, 100, true);
-		   
-		  var movementSpeed = (Math.random()*1.0)+.05;
-		  var targetingSpeed = (Math.random()*10)+2;
-		  var targetingAccuracy = (Math.random()*100);
-		  
-		  var aquiredtargetX = this.enemy.position.x;
-		  var aquiredtargetZ = this.enemy.position.z;
-		  var lastupdate = 0;
-		  var currenttime;
-		  var rando = Math.round(Math.random()*1);
-		  var x = ((Math.random()*1500)-750);
-		  var z = ((Math.random()*1500)-750);
-		  if (rando == 1)
-		  {
-			  if (x > 0){
-			  	x = 800;
-			  }
-			  else
-			  {
-				  x=-800;
-			  }	
-		  }
-		  else
-		  {
-			  if (z > 0){
-			  	z = 800;
-			  }
-			  else
-			  {
-				  z=-800;
-			  }	
-		  }
-		  this.enemy.position.x = x;
-		  this.enemy.position.z = z;
-		  
-		  DummyMovement(this.enemy);
-		  
-		  this.respawn = function(){
-    			this.enemy.isVisible = true;
-    			this.enemy._isEnabled = true;
-			  this.level += 1;
-			  this.health = baseHealth + (this.level*healthIncrease);
-			  this.maxHealth = this.health;
-			  
-			  rando = Math.round(Math.random()*1);
-			  x = ((Math.random()*1500)-750);
-			  z = ((Math.random()*1500)-750);
-			  if (rando == 1)
-			  {
-				  if (x > 0){
-				  	x = 800;
-				  }
-				  else
-				  {
-					  x=-800;
-				  }	
-			  }
-			  else
-			  {
-				  if (z > 0){
-				  	z = 800;
-				  }
-				  else
-				  {
-					  z=-800;
-				  }	
-			  }
-			  this.enemy.position.x = x;
-			  this.enemy.position.z = z;
- 			 DummyMovement(this.enemy);
-			
-		  }
-		  
-		  this.explode = function()
-		  {
-			
-  			if (this.enemy._isEnabled == true){
-				explodeaudio.volume =.2;
-				explodeaudio.play();
-  				player.LightSpeedGauge += 5;
-				this.enemy.animations = [];
-				this.enemy.setEnabled(false);
-			    this.enemy.isVisible = false;
-		  	    this.enemy._isEnabled = false;
-			    this.enemy.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
-			
-  		  var background = BABYLON.Mesh.CreatePlane("background", 20, scene, false);
-  		  background.material = new BABYLON.StandardMaterial("background", scene);
-		  background.position.x = this.enemy.position.x;
-		  background.position.z = this.enemy.position.z;
-		  background.rotation.y = Math.PI;
-		  background.rotation.x = Math.PI/2;
-		  background.rotation.z = Math.PI + (Math.PI/2);
-
-  		  var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
-  		  background.material.diffuseTexture = backgroundTexture;
-
-  		  backgroundTexture.drawText("+5", null, 350, "bold 370px Segoe UI", "white", "#555555");
-		  enemyexplosion.clone("enemyblowedup", background)
-		  
-	      var animationBox3 = new BABYLON.Animation("tutoAnimation3", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                      BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
-
-	      // Animation keys
-	      var keys = [];
-	      //At the animation key 0, the value of scaling is "1"
-	      keys.push({
-	          frame: 0,
-	          value: 1.0
-	      });
-
-	      //At the animation key 20, the value of scaling is "0.2"
-	      keys.push({
-	          frame: 50,
-	          value: .5
-	      });
-
-	      //At the animation key 100, the value of scaling is "1"
-	      keys.push({
-	          frame: 100,
-	          value: .0
-	      });
-
-	      //Pluging the sequence of keys to the animation object
-	      animationBox3.setKeys(keys);
-	  	  background.animations.push(animationBox3);
-	  
-	        var animationBox4 = new BABYLON.Animation("tutoAnimation4", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
-
-	        // Animation keys
-	        var keys = [];
-	        //At the animation key 0, the value of scaling is "1"
-	        keys.push({
-	            frame: 0,
-	            value: .0
-	        });
-
-	        //At the animation key 20, the value of scaling is "0.2"
-	        keys.push({
-	            frame: 50,
-	            value: -100
-	        });
-
-	        //At the animation key 100, the value of scaling is "1"
-	        keys.push({
-	            frame: 100,
-	            value: -200
-	        });
-
-	        //Pluging the sequence of keys to the animation object
-	        animationBox4.setKeys(keys);
-	    	  background.animations.push(animationBox4);
-	  
-	  	 scene.beginAnimation(background, 0, 100, false);
-		  	this.respawn();
-		  
-	  }
-	  }
-		  
-	this.Damage = function(intDamage)
-	{
-		hitaudio.play();
-		if(this.health==this.maxHealth){
-			    var hitanimation = new BABYLON.Animation("hitanimation", "material.emissiveColor.r", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                    BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE); ///set to loop to act like a glowing bomb
-	  	var keys1 = [];
-	    //At the animation key 0, the value of scaling is "1"
-	    keys1.push({
-	        frame: 0,
-	        value: .0
-	    });
-
-	    //At the animation key 20, the value of scaling is "0.2"
-	    keys1.push({
-	        frame: 50,
-	        value: 1.0
-	    });
-
-	    //At the animation key 100, the value of scaling is "1"
-	    keys1.push({
-	        frame: 100,
-	        value: .0
-	    });
-
-	    //Pluging the sequence of keys to the animation object
-	    	hitanimation.setKeys(keys1);
-		    this.enemy.animations.push(hitanimation);	
-		}
-		this.health -= intDamage;
-		//scene.beginAnimation(this.enemy, 0,30, false);
-		//enemyexplosion.clone("enemyblowedup", this.enemy);
-	 if(this.health <= 0){
-		 this.explode();
-	 } 
-	}
-		  
-		  this.update = function(targetX, targetZ){
-			 
-			 if(this.health <= 0){
-				 this.explode();
-			 } 
-			 
-			 /*
-			  if((time-lastupdate) > targetingSpeed)
-			  {
-				  aquiredtargetX = ((Math.random()*1500)-750); //targetX;
-				  aquiredtargetZ = ((Math.random()*1500)-750);// targetZ;
-			  	  lastupdate = time;
-			  }
-	          if(this.enemy.position.x > aquiredtargetX){
-	              this.enemy.position.x -= movementSpeed; 
-	          }
-	          else if(this.enemy.position.x < aquiredtargetX)
-	          {
-	              this.enemy.position.x += movementSpeed;
-	          }
-	          if(this.enemy.position.z > aquiredtargetZ){
-	              this.enemy.position.z -= movementSpeed; 
-	          }
-	          else if(this.enemy.position.z < aquiredtargetZ)
-	          {
-	              this.enemy.position.z += movementSpeed;
-	          }
-			 */
-		  }
-	}  
-	  
-	  
-	function UserInterface(){
-		
-	}
-	  
 
 	  scene.registerBeforeRender(function() {
 		  if (scene.isReady()){}
@@ -940,7 +532,7 @@ var loaded = false;
   // Once the scene is loaded, just register a render loop to render it
   engine.runRenderLoop(function () {
 	  time= time+(1/BABYLON.Tools.GetFps());
-	  StatusText.innerHTML = BABYLON.Tools.GetFps();
+	  StatusText.innerHTML = Math.round(BABYLON.Tools.GetFps()) + " FPS";
 	  if(loaded==true){
 		  player.update();
 
@@ -1031,6 +623,7 @@ var loaded = false;
   
   
   if(event.keyCode == 82){
+	 // Reset();
     if(player.LightSpeedGauge >= player.LightSpeedGaugeCapacity && player.health > 0){
 		
 		movex=0;
