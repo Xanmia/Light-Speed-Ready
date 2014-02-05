@@ -59,6 +59,13 @@ html, body, canvas {
 	padding:1px;
 }
 
+.bottomLeft{
+	position:fixed;
+	bottom:5px; 
+	left:10px;
+	padding:1px;
+}
+
 .topLeft{
 	position:fixed;
 	top:10px; 
@@ -124,4 +131,32 @@ html, body, canvas {
   margin-left:-400px;
 margin-top:-300px;
   display:none;
+}
+
+#boxes{
+  height: 60px;
+  text-align: center;
+}
+
+#boxes .box{
+  width: 60px;
+  height: 60px;
+  background: #555;
+  display: inline-block;
+  margin: 0 3px;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 100%;
+  font-weight: 200;
+  text-align: center;
+  line-height: 90px;
+  color: #f0f0f0;
+    opacity:0.5;
+}
+
+h2 { 
+   position: absolute; 
+   top: 0px; 
+   left: 0; 
+   width: 100%; 
 }
