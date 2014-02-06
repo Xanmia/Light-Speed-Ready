@@ -1,7 +1,7 @@
 
 var enemiesDEF = [
 { // init enemy, tea cup	
-	baseHealth: 50,
+	baseHealth: 25,
 	healthIncrease: 10,
 	speed: 1,
 	reSpawn: true,
@@ -108,11 +108,11 @@ var enemiesDEF = [
 	}
 },
 { // regular rock	
-	baseHealth: 75,
+	baseHealth: 50,
 	healthIncrease: 10,
 	speed: 1,
 	reSpawn: true,
-	value: 10,
+	value: 5,
 	size: 20,
 	init: function(obj){
 		this.enemy = obj.clone("test");
