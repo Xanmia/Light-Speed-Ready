@@ -56,7 +56,7 @@ function BaseEnemy ( opt, obj3d ) {
   
 	this.respawn = function(level)
 	{
-		if (level = null){
+		if (level == null){
 			this.level += 1;
 		}
 		else{
