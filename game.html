@@ -204,6 +204,7 @@ var loaded = false;
 		while(totalEnemies--){
 			enemies[totalEnemies].respawn(level);
 		}
+		player.status = true;
 	    camera.target = player.BoundingBox.position;
 	}
 	
@@ -228,7 +229,7 @@ var loaded = false;
 		this.playerStats = playerStats;
 		this.LightSpeedGauge =0;
 		this.Resources = 0;
-		
+		this.status = true;
 		this.LightSpeedGaugeCapacity = 100;
 		this.ShipCapacity = playerStats.ShipCapacity;
 		this.health = playerStats.maxHealth;
@@ -397,9 +398,10 @@ var loaded = false;
 		
 		this.Damage = function(intDamage)
 		{
-			this.health -= intDamage;
-			HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
-			
+			if(this.status == true){
+				this.health -= intDamage;
+				HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
+			}
 		 if(this.health <= 0){
 			 HealthGauge.style.width =  "0%"; 
 			 this.explode();
@@ -664,6 +666,7 @@ var loaded = false;
 		scene.beginAnimation(camera, 0, 100, false, 0, function(){
    			// player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
    		    // player.Graphic.rotation.y = (Math.PI/2); 
+			player.status = false;
 	lightspeedaudio.play();
 	        var shiplightspeedMove = new BABYLON.Animation("shiplightspeedMove", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
 	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
