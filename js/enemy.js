@@ -1,5 +1,5 @@
 
-function BaseEnemy ( opt, obj3d ) {
+function BaseEnemy ( opt ) {
 	for( var k in opt ) {
 		this[k] = opt[k];
 	}
@@ -10,7 +10,7 @@ function BaseEnemy ( opt, obj3d ) {
 	this.level = 0;
 	this.health = this.baseHealth + (this.level*this.healthIncrease);
 	var maxHealth = this.baseHealth + (this.level*this.healthIncrease);
-		this.init(obj3d);
+		this.init();
 
   	var background = BABYLON.Mesh.CreatePlane("COUNT", 20, scene);
   	background.material = new BABYLON.StandardMaterial("background", scene);
@@ -163,5 +163,11 @@ function BaseEnemy ( opt, obj3d ) {
 	 	if(this.health <= 0){
 		 	this.explode();
 	 	} 
+	}
+	
+	this.dispose = function(){
+		enemyexplosion.dispose();
+		background.dispose();
+		this.enemy.dispose();
 	}
 };

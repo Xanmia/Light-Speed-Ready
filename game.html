@@ -41,6 +41,7 @@
 </body>
 <script src="js/enemies.js" type="text/javascript" ></script>
 <script src="js/enemy.js" type="text/javascript" ></script>
+<script src="js/levels.js" type="text/javascript" ></script>
        <script type="text/javascript">
 var loaded = false;
 	var level = 0, healthIncrease=5;
@@ -62,7 +63,7 @@ var loaded = false;
 	 lightspeedstartaudio.volume = .5;
 	// var explodeaudio = new Audio("assets/explosion.wav");  
      var engine = new BABYLON.Engine(canvas,false)
-     
+      
 	playerStats = new PlayerStats();
 	
 	function levelingSystem($scope) {
@@ -123,6 +124,7 @@ var loaded = false;
 		enemies=[];
 		time = 0;
 	    engine = new BABYLON.Engine(canvas,false)
+		   //engine.setHardwareScalingLevel(1);
 		scene = new BABYLON.Scene(engine);
 		scene.clearColor = new BABYLON.Color3(0,0,0);
         camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 500, new BABYLON.Vector3(0, 0, 0), scene);
@@ -160,15 +162,8 @@ var loaded = false;
            		cup =  newMeshes[0];
    				cup.position.x = 850;
    				cup.position.z = 850; 
-	   	        	var enemyCount = 50;
-	   	        	while(enemyCount--) {
-	   				 	enemies.push(new BaseEnemy( enemiesDEF[ 0 ], cup ));
-	   	        	}
-	   	        	 enemyCount = 50;
-	   	        	while(enemyCount--) {
-	   				 	enemies.push(new BaseEnemy( enemiesDEF[ 1 ], rock ));
-	   	        	}
-	   				//enemies.push(new BaseEnemy( enemiesDEF[ 2 ], rock  ));
+	   	      
+					SceneReset();
 			   });
 			
         });
@@ -186,10 +181,38 @@ var loaded = false;
  	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 	  // skybox.isVisible = false;
 //scene.activeCamera.attachControl(canvas);
+
+
 	}
 
 	function SceneReset()
 	{
+		var lvlDetails = levels.filter(function(value){ return value.level==level; });
+		if(lvlDetails.length!=0){
+			var xEnemy = enemies.length;
+			while(xEnemy--){
+				enemies[xEnemy].dispose();
+			}
+			enemies = [];
+			var typeAmount = lvlDetails[0].types.length;
+			while(typeAmount--){
+				var totalItems = lvlDetails[0].types[typeAmount].total;
+				while(totalItems--){
+					enemies.push(new BaseEnemy( enemiesDEF[ lvlDetails[0].types[typeAmount].type ] ));
+				}
+			}
+		}
+		/*
+    	var enemyCount = 50;
+    	while(enemyCount--) {
+		 	enemies.push(new BaseEnemy( enemiesDEF[ 0 ], cup ));
+    	}
+    	 enemyCount = 50;
+    	while(enemyCount--) {
+		 	enemies.push(new BaseEnemy( enemiesDEF[ 1 ], rock ));
+    	}
+		enemies.push(new BaseEnemy( enemiesDEF[ 2 ], rock  ));
+		*/
 		LevelText.innerHTML = level;
 		camera.radius = 500;
 		ResourcesText.innerHTML =  playerStats.Resources + "/" + player.ShipCapacity;

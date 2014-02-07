@@ -7,8 +7,8 @@ var enemiesDEF = [
 	reSpawn: true,
 	value: 5,
 	size: 10,
-	init: function(obj){
-		this.enemy = obj.clone("test");
+	init: function(){
+		this.enemy = cup.clone("test");
 		var actsize = (Math.random()*this.size) + 20; ///min size is 15
 	  	this.enemy.scaling.x = actsize;
 	  	this.enemy.scaling.y = actsize;
@@ -114,8 +114,8 @@ var enemiesDEF = [
 	reSpawn: true,
 	value: 5,
 	size: 20,
-	init: function(obj){
-		this.enemy = obj.clone("test");
+	init: function(){
+		this.enemy = rock.clone("test");
 		var actsize = (Math.random()*this.size) + 20; ///min size is 15
 	  	this.enemy.scaling.x = actsize;
 	  	this.enemy.scaling.y = actsize;
@@ -221,8 +221,8 @@ var enemiesDEF = [
 	reSpawn: false,
 	value: 50,
 	size: 100,
-	init: function(obj){
-		this.enemy = obj.clone("test");
+	init: function(){
+		this.enemy = rock.clone("test");
 	  	this.enemy.scaling.x = this.size;
 	  	this.enemy.scaling.y = this.size;
 	  	this.enemy.scaling.z = this.size;
