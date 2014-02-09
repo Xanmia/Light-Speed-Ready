@@ -24,6 +24,7 @@ function BaseEnemy ( opt ) {
   	backgroundTexture.drawText("+"+this.value, null, 350, "bold 325px Segoe UI", "white", "#555555");
 
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
+	
 	enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
 	enemyexplosion.emitter = background; // the starting object, the emitter
 	enemyexplosion.minEmitBox = new BABYLON.Vector3(-1, 0, -1); // Starting all From
@@ -39,7 +40,7 @@ function BaseEnemy ( opt ) {
 	enemyexplosion.minLifeTime = .25;
 	enemyexplosion.maxLifeTime = .550;
 
-	enemyexplosion.emitRate = 15000;
+	enemyexplosion.emitRate = 5000;
 	enemyexplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
 	enemyexplosion.direction1 = new BABYLON.Vector3(-8, -8, 0);
 	enemyexplosion.direction2 = new BABYLON.Vector3(8, 8, 0);
@@ -63,7 +64,7 @@ function BaseEnemy ( opt ) {
 			this.level = level;
 		}
 			
-		  	this.maxHealth = this.baseHealth + (this.level*healthIncrease);
+		  	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
 		    this.health = this.maxHealth;
 		    
 			this.enemy.setEnabled(true);

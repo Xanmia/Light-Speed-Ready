@@ -41,12 +41,14 @@
 </body>
 <script src="js/enemies.js" type="text/javascript" ></script>
 <script src="js/enemy.js" type="text/javascript" ></script>
+<script src="js/actions.js" type="text/javascript" ></script>
+<script src="js/action.js" type="text/javascript" ></script>
 <script src="js/levels.js" type="text/javascript" ></script>
        <script type="text/javascript">
 var loaded = false;
 	var level = 0, healthIncrease=5;
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
-	 var player, playerStats, rock, cup, enemyexplosion,bulletobj,box, comet;
+	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, comet;
      var canvas = document.getElementById("viewport");
 	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
 	 var ResourcesText  = document.getElementById('Resources');
@@ -132,7 +134,7 @@ var loaded = false;
 	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
 		bulletobj.isVisible =false;
 	   	//box = BABYLON.Mesh.CreateBox("defaultBox", 10, scene);
-	   
+	   		
         BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
            newMeshes[0].scaling.x = .015;
            newMeshes[0].scaling.y = .015;
@@ -163,13 +165,23 @@ var loaded = false;
    				cup.position.x = 850;
    				cup.position.z = 850; 
 	   	      
+		        BABYLON.SceneLoader.ImportMesh("", "", "assets/a5.babylon", scene, function (newMeshes, particleSystems) {
+		        	rock2 =  newMeshes[0];
+					rock2.position.x = 850;
+					rock2.position.z = 850; 
+			  	  	rock2.material = rockmaterial;
 					SceneReset();
+				});
+			  
+
 			   });
 			
         });
 		
 		
 	   light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
+	   // 
+   
 		
  	   skybox = BABYLON.Mesh.CreateBox("skyBox", 1500.0, scene);
  	   skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
@@ -179,7 +191,7 @@ var loaded = false;
  	   skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
  	   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
  	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	  // skybox.isVisible = false;
+	   //skybox.isVisible = false;
 //scene.activeCamera.attachControl(canvas);
 
 
@@ -217,8 +229,13 @@ var loaded = false;
 		camera.radius = 500;
 		ResourcesText.innerHTML =  playerStats.Resources + "/" + player.ShipCapacity;
 		levelScreen.style.display = "none";
+		
 		player.LightSpeedGauge = 0;
 		player.health = player.maxHealth;
+		player.speed = playerStats.speed;
+		player.bulletDamage = playerStats.bulletDamage;
+		player.ShipCapacity = playerStats.ShipCapacity;
+		
 		HealthGauge.style.width = ((player.health / player.maxHealth)*100) + "%"; 
 		player.BoundingBox.position = new BABYLON.Vector3(0,0,0);
 		player.Graphic.position = new BABYLON.Vector3(0,0,0);
@@ -241,7 +258,7 @@ var loaded = false;
  
 	function PlayerStats(){
 		this.Resources = 0;
-		this.maxHealth = 100;
+		this.maxHealth = 1000000;
 		this.ShipCapacity = 200;
 		this.speed = 1;
 		this.bulletSpeed = 2;
@@ -250,6 +267,7 @@ var loaded = false;
 	
 
 	function Player(){
+		this.actions = [];
 		this.playerStats = playerStats;
 		this.LightSpeedGauge =0;
 		this.Resources = 0;
@@ -349,8 +367,9 @@ var loaded = false;
         bulletpart.direction2 = new BABYLON.Vector3(100, 100, 100);
 	    bulletpart.maxLifeTime = .1;
 		bulletpart.maxSize = 5.5;
+		bulletpart.disposeOnStop = false;
 		//bulletpart.targetStopDuration = 2;
-  	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage': this.bulletDamage});
+  	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage': this.bulletDamage, 'particle': bulletpart});
       }
 	
 	  
@@ -441,7 +460,9 @@ var loaded = false;
 			 shootaudio.play();
 			 
 			this.bullet[bulletsshot].graphic.isVisible = true;
-			this.bullet[bulletsshot].graphic.setEnabled(true);
+			//this.bullet[bulletsshot].graphic.setEnabled(true);
+			this.bullet[bulletsshot].damage = this.bulletDamage;
+			this.bullet[bulletsshot].particle.start();
  			this.bullet[bulletsshot].graphic.position.z = this.Graphic.position.z;
  			this.bullet[bulletsshot].graphic.position.x = this.Graphic.position.x;
 
@@ -507,7 +528,11 @@ var loaded = false;
 				//this.playerStats.Resources = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity);
 				
 			}
-
+			var activeActions = this.actions.length;
+			while(activeActions--){
+				this.actions[activeActions].update();
+			}
+			
 			var totalB = this.bullet.length;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
@@ -531,9 +556,9 @@ var loaded = false;
 			
 		}
 	}
-	/////////////////////////////////////////////////////////////////
-      scene.activeCamera.attachControl(canvas);
-	  ////////////////////////////////////////////////////////////////
+	 ////////////////////////////////////////////////////////////////
+     // scene.activeCamera.attachControl(canvas);
+	 ////////////////////////////////////////////////////////////////
 	  
 
 	  scene.registerBeforeRender(function() {
@@ -543,8 +568,10 @@ var loaded = false;
 
   // Once the scene is loaded, just register a render loop to render it
   engine.runRenderLoop(function () {
+	  
 	  time= time+(1/BABYLON.Tools.GetFps());
 	  StatusText.innerHTML = Math.round(BABYLON.Tools.GetFps()) + " FPS";
+	  
 	  if(loaded==true){
 		  player.update();
 
@@ -556,19 +583,19 @@ var loaded = false;
 		  bulletCount = player.bullet.length;
 		  	   enemies[enemiesCount].update(player.Graphic.position.x,player.Graphic.position.z);
 		  while(bulletCount--){
-			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,false)){
+			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
 				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
 				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
-			
+					player.bullet[bulletCount].particle.stop();
 					player.bullet[bulletCount].graphic.isVisible = false; 
-					player.bullet[bulletCount].graphic.setEnabled(false);
+					//player.bullet[bulletCount].graphic.setEnabled(false);
 				
 				  }
 			  }
 		  }
 		  
 		  
-		  if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,false)==true)
+		  if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
 		  {
 			if(enemies[enemiesCount].enemy.isVisible == true){
 				 player.Damage(enemies[enemiesCount].health/2);
@@ -621,16 +648,13 @@ var loaded = false;
   }
   if(event.keyCode == 49){
     if(loaded==true){
-       	player.Graphic.position = new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750)); 
+       	player.actions.push(new action( actionsDEF[ 1 ] ));	
 		
     }
   }
   if(event.keyCode == 50){
     if(loaded==true){
-		var shieldObj = BABYLON.Mesh.CreateSphere("shield", 1,50, scene);
-		var shieldmaterial = new BABYLON.StandardMaterial("shieldMaterial",scene);
-		shieldmaterial.wireframe = true;
-		shieldObj.material = shieldmaterial;
+		player.actions.push(new action( actionsDEF[ 0 ] ));
     }
   }
   if(event.keyCode == 51){
@@ -641,7 +665,7 @@ var loaded = false;
   }
   if(event.keyCode == 52){
     if(loaded==true){
-       	player.Graphic.position = new BABYLON.Vector3(((Math.random()*1500)-750),0,((Math.random()*1500)-750)); 
+       	player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1500)-750)); 
 		
     }
   }
@@ -734,7 +758,7 @@ var loaded = false;
 					
 				    var scope = angular.element(levelScreen).scope();
 				    scope.$apply(function(){
-				        scope.Resources = (player.LightSpeedGauge - player.LightSpeedGaugeCapacity);
+				        scope.Resources = 1000; //(player.LightSpeedGauge - player.LightSpeedGaugeCapacity);
 				    })
 					
 				//scene.dispose();

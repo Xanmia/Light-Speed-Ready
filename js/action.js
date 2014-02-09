@@ -3,4 +3,8 @@ function action( opt ){
 		this[k] = opt[k];
 	}
 	
+	this.init();
+	this.update = function(){
+		this.behavior();
+	}
 };
