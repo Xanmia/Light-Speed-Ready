@@ -77,7 +77,7 @@ function BaseEnemy ( opt ) {
 		if (this.enemy._isEnabled == true){
 			//explodeaudio.volume =.2;
 			//explodeaudio.play();
-			player.LightSpeedGauge += this.value;
+			player.addResources(this.value);
 			this.enemy.animations = [];
 			this.enemy.setEnabled(false);
 		

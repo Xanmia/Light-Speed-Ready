@@ -112,7 +112,7 @@ var enemiesDEF = [
 	healthIncrease: 10,
 	speed: 1,
 	reSpawn: true,
-	value: 5,
+	value: 113,
 	size: 20,
 	init: function(){
 		this.enemy = rock.clone("test");

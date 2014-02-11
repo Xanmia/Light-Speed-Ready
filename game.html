@@ -47,6 +47,7 @@
        <script type="text/javascript">
 var loaded = false;
 	var level = 0, healthIncrease=5;
+	var up, down, left, right;
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
 	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, comet;
      var canvas = document.getElementById("viewport");
@@ -133,6 +134,12 @@ var loaded = false;
   	    camera.maxZ = 20000;
 	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
 		bulletobj.isVisible =false;
+		bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain", 4,3, scene);
+	    //bulletobj2 = BABYLON.Mesh.CreateCylinder("bulletmain", 10,3,3,2, scene);
+		//bulletobj2.rotation.z = Math.PI*.5;
+		bulletobj2.position.x = 15000;
+		bulletobj2.position.z = 15000;
+		//bulletobj2.isVisible =false;
 	   	//box = BABYLON.Mesh.CreateBox("defaultBox", 10, scene);
 	   		
         BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
@@ -191,8 +198,8 @@ var loaded = false;
  	   skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
  	   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
  	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	   //skybox.isVisible = false;
-//scene.activeCamera.attachControl(canvas);
+	 //  skybox.isVisible = false;
+scene.activeCamera.attachControl(canvas);
 
 
 	}
@@ -227,7 +234,7 @@ var loaded = false;
 		*/
 		LevelText.innerHTML = level;
 		camera.radius = 500;
-		ResourcesText.innerHTML =  playerStats.Resources + "/" + player.ShipCapacity;
+		ResourcesText.innerHTML =  playerStats.Resources + "/" + playerStats.ShipCapacity;
 		levelScreen.style.display = "none";
 		
 		player.LightSpeedGauge = 0;
@@ -258,11 +265,14 @@ var loaded = false;
  
 	function PlayerStats(){
 		this.Resources = 0;
-		this.maxHealth = 1000000;
+		this.maxHealth = 100;
 		this.ShipCapacity = 200;
 		this.speed = 1;
-		this.bulletSpeed = 2;
 		this.bulletDamage = 25;
+		this.Defense = 0;
+		this.ResourceCollectionIncrease = 0;
+		
+		this.bulletSpeed = 2;
 	}
 	
 
@@ -281,7 +291,7 @@ var loaded = false;
 		this.bulletSpeed = playerStats.bulletSpeed;
 		this.bulletDamage = playerStats.bulletDamage;
 		var bulletsshot = 0;
-		
+		 this.currentDirection = "left";
 		this.bullet = [];//  BABYLON.Mesh.CreateSphere("bullet", 2,2, scene);
 
 		lightSpeedGauge.style.width = 0;
@@ -301,57 +311,29 @@ var loaded = false;
 
          //Texture of each particle
          particleSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
-		   // Where the particles comes from
-      particleSystem.emitter = this.Graphic; // the starting object, the emitter
-      particleSystem.minEmitBox = new BABYLON.Vector3(-100, 100, 700); // Starting all From
-      particleSystem.maxEmitBox = new BABYLON.Vector3(100, 100, 800); // To...
-    //  particleSystem.minEmitBox = new BABYLON.Vector3(-1, 1, 0); // Starting all From
-    //  particleSystem.maxEmitBox = new BABYLON.Vector3(1, 1, 0); // To...
-
-      // Colors of all particles (splited in 2 + specific color before dispose)
+      particleSystem.emitter = this.Graphic; 
+      particleSystem.minEmitBox = new BABYLON.Vector3(-100, 100, 700);
+      particleSystem.maxEmitBox = new BABYLON.Vector3(100, 100, 800); 
       particleSystem.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
       particleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
       particleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-
-      // Size of each particle (random between...
       particleSystem.minSize = 1.0;
       particleSystem.maxSize = 7.5;
-
-      // Life time of each particle (random between...
       particleSystem.minLifeTime = 0.01;
       particleSystem.maxLifeTime = .25;
-
-      // Emission rate
       particleSystem.emitRate = 1500;
-      // OR
-      //particleSystem.manualEmitCount = 1000;
-
-
-      // Blend mode : BLENDMODE_ONEONE, or BLENDMODE_STANDARD
       particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-
-      //Set the gravity of all particles (not necessary down)
       particleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
-
-      //Direction of each particle after it has been emitted
       particleSystem.direction1 = new BABYLON.Vector3(-7, 8, 3);
       particleSystem.direction2 = new BABYLON.Vector3(7, 8, -3);
-
-      //angular speed, in radian
       particleSystem.minAngularSpeed = 0;
       particleSystem.maxAngularSpeed = Math.PI;
 
       particleSystem.targetStopDuration = 0;
-
-      //speed
       particleSystem.minEmitPower = 1;
       particleSystem.maxEmitPower = 3;
       particleSystem.updateSpeed = 0.005;
-
-      //dispose
       particleSystem.disposeOnStop = true;
-
-      //Start the particle system
       particleSystem.start();
 
 	var totalBullets = 100;
@@ -372,6 +354,8 @@ var loaded = false;
   	    this.bullet.push({'graphic': newbullet, 'direction':'right', 'damage': this.bulletDamage, 'particle': bulletpart});
       }
 	
+		this.actions.push(new action( actionsDEF[ 1 ] ));	
+	this.actions.push(new action( actionsDEF[ 3 ] ));	
 	  
 	this.explode = function(){
 			if (this.Graphic._isEnabled == true){
@@ -465,30 +449,79 @@ var loaded = false;
 			this.bullet[bulletsshot].particle.start();
  			this.bullet[bulletsshot].graphic.position.z = this.Graphic.position.z;
  			this.bullet[bulletsshot].graphic.position.x = this.Graphic.position.x;
-
-			if(this.Graphic.rotation.y==Math.PI){
-				this.bullet[bulletsshot].direction = 'right';
-				//this.bullet.push({'graphic': basebullet, 'direction':'right', 'damage':25});
-			}
-			else if(this.Graphic.rotation.y==0){
-				this.bullet[bulletsshot].direction = 'left';
-				//this.bullet.push({'graphic': basebullet, 'direction':'left', 'damage':25});
-			}
-			else if(this.Graphic.rotation.y==(Math.PI/2)){
-				this.bullet[bulletsshot].direction = 'up';
-				//this.bullet.push({'graphic': basebullet, 'direction':'up', 'damage':25});
-			}
-			else{
-				this.bullet[bulletsshot].direction = 'down';
-				//this.bullet.push({'graphic': basebullet, 'direction':'down', 'damage':25});
-			}
+			this.bullet[bulletsshot].direction = currentDirection;
 			if (bulletsshot >= 99){
 				bulletsshot=0;
 			}
 		  }
 		}
 		
-		this.update = function(){
+		this.addResources = function(resAmount){
+			var amount = resAmount;
+		    if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
+				amount = (this.LightSpeedGauge + amount > this.LightSpeedGaugeCapacity) ? (this.LightSpeedGaugeCapacity - this.LightSpeedGauge) : amount;
+		    	this.LightSpeedGauge += amount;
+				resAmount -= amount;
+			}
+			if (playerStats.Resources < playerStats.ShipCapacity){
+				playerStats.Resources += (playerStats.Resources + resAmount > playerStats.ShipCapacity) ? (playerStats.ShipCapacity - playerStats.Resources) : resAmount;
+			}
+
+				
+			
+		}
+		
+		this.update = function(){		
+				
+			if (up && right){
+				this.Graphic.rotation.y = Math.PI*.75; //up-and-right
+				movez = this.speed/1.5; 
+				movex = -this.speed/1.5;
+				this.currentDirection = "upright";
+			}
+			else if (up && left){
+				movex = -this.speed/1.5;
+				movez = -this.speed/1.5;
+				 this.Graphic.rotation.y = Math.PI/4; //up-and-left
+				 this.currentDirection = "upleft";
+			}
+			else if (down && right){
+				movez = this.speed/1.5;
+				movex = this.speed/1.5;
+				this.Graphic.rotation.y = Math.PI + Math.PI*.25; //down-and-right
+				 this.currentDirection = "downright";
+			}
+			else if (down && left){
+				movex = this.speed/1.5;
+				movez = -this.speed/1.5;
+				 this.Graphic.rotation.y = Math.PI + (Math.PI*.75); //down and left
+				  this.currentDirection = "downleft";
+			}
+			else if (up){
+	            player.Graphic.rotation.y = Math.PI/2; 
+	   		 	movex = -this.speed;// need stat on player object
+	   		 	movez = 0;
+				this.currentDirection = "up";
+			}
+			else if (down){
+	            player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
+	   		 	movex = this.speed;// need stat on player object
+	   		 	movez = 0;
+				this.currentDirection = "down";
+			}
+			else if (left){
+	            player.Graphic.rotation.y = 0; 
+	   		 	movez = -this.speed;// need stat on player object
+	   		 	movex = 0;
+				this.currentDirection = "left";
+			}
+			else if (right){
+	            this.Graphic.rotation.y = Math.PI; 
+	   			movez = this.speed; // need stat on player object
+	   		 	movex = 0;
+				this.currentDirection = "right";
+			}
+			//player.shoot();
 		 if(this.health <= 0){
 			 this.explode();
 		 } 
@@ -518,26 +551,27 @@ var loaded = false;
 
 	  	  //this.BoundingBox.position.z = this.Graphic.position.z;
 	      }
-		    if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
+		   // if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
 		    	lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
-		    }
-			else
-			{
-				lightSpeedGauge.style.width = 100 + "%";
-				ResourcesText.innerHTML = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity) + "/" + this.ShipCapacity;
-				//this.playerStats.Resources = (this.LightSpeedGauge - this.LightSpeedGaugeCapacity);
+		  //  }
+			//else
+			//{
+			//	lightSpeedGauge.style.width = 100 + "%";
+				ResourcesText.innerHTML = playerStats.Resources + "/" + this.ShipCapacity;
 				
-			}
+				
+				//}
 			var activeActions = this.actions.length;
 			while(activeActions--){
 				this.actions[activeActions].update();
 			}
 			
+		
 			var totalB = this.bullet.length;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
 				{
-						this.bullet[totalB].graphic.position.z += this.speed + this.bulletSpeed;
+					this.bullet[totalB].graphic.position.z += this.speed + this.bulletSpeed;
 				}
 				else if (this.bullet[totalB].direction == "left")
 				{
@@ -551,7 +585,32 @@ var loaded = false;
 				{
 					this.bullet[totalB].graphic.position.x += this.speed + this.bulletSpeed;
 				}
+				else if (this.bullet[totalB].direction == "upleft")
+				{
+					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed)/1.5;
+				}
+				else if (this.bullet[totalB].direction == "upright")
+				{
+					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.z += (this.speed + this.bulletSpeed)/1.5;
+				}
+				else if (this.bullet[totalB].direction == "downleft")
+				{
+					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.x += (this.speed + this.bulletSpeed)/1.5;
+				}
+				else if (this.bullet[totalB].direction == "downright")
+				{
+					this.bullet[totalB].graphic.position.z += (this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.x += (this.speed + this.bulletSpeed)/1.5;
+				}
 				
+				if (this.bullet[totalB].graphic.position.z > 750 || this.bullet[totalB].graphic.position.z < -750 || this.bullet[totalB].graphic.position.x > 750 || this.bullet[totalB].graphic.position.x < -750)
+				{
+					this.bullet[totalB].graphic.dispose();
+					this.bullet.splice(totalB, 1);
+				}
 			}
 			
 		}
@@ -560,10 +619,10 @@ var loaded = false;
      // scene.activeCamera.attachControl(canvas);
 	 ////////////////////////////////////////////////////////////////
 	  
-
-	  scene.registerBeforeRender(function() {
-		  if (scene.isReady()){}
-	  });
+	 //
+	 // scene.registerBeforeRender(function() {
+	//	  if (scene.isReady()){}
+	//  });
 
 
   // Once the scene is loaded, just register a render loop to render it
@@ -612,43 +671,66 @@ var loaded = false;
 
 
    document.onkeydown = handleKeyDown;
+   document.onkeyup = handleKeyUp;
   // document.onmousedown = handleMouseDown;
   // window.addEventListener( 'mousedown', onDocumentMouseDown, false );
 
-
+  function handleKeyUp(event){
+      if(event.keyCode == 68){
+  		 right = false;
+		 //console.log("right");
+      }
+      if(event.keyCode == 65){
+		 // console.log("left");
+  		 left = false;
+      }
+     if(event.keyCode == 87){
+		 //console.log("up");
+  		 up = false;
+      }
+      if(event.keyCode == 83){
+		 // console.log("down");
+  		 down = false;
+      }
+  	
+  }
 
   function handleKeyDown(event) {
     if(event.keyCode == 68){
       if(loaded==true){
-         player.Graphic.rotation.y = Math.PI; 
-		 movez = player.speed; // need stat on player object
-		 movex = 0;
+       //  player.Graphic.rotation.y = Math.PI; 
+		// movez = player.speed; // need stat on player object
+	//	 movex = 0;
+		 right = true;
       }
     }
     if(event.keyCode == 65){
       if(loaded==true){
-         player.Graphic.rotation.y = 0; 
-		 movez = -player.speed;// need stat on player object
-		 movex = 0;
+      //   player.Graphic.rotation.y = 0; 
+		// movez = -player.speed;// need stat on player object
+		// movex = 0;
+		 left = true;
       }
     }
    if(event.keyCode == 87){
       if(loaded==true){
-         player.Graphic.rotation.y = Math.PI/2; 
-		 movex = -player.speed;// need stat on player object
-		 movez = 0;
+        // player.Graphic.rotation.y = Math.PI/2; 
+	//	 movex = -player.speed;// need stat on player object
+//		 movez = 0;
+		 up = true;
       }
     }
     if(event.keyCode == 83){
       if(loaded==true){
-         player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
-		 movex = player.speed;// need stat on player object
-		 movez = 0;
+  //       player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
+	//	 movex = player.speed;// need stat on player object
+//		 movez = 0;
+		 down = true;
       }
   }
   if(event.keyCode == 49){
     if(loaded==true){
-       	player.actions.push(new action( actionsDEF[ 1 ] ));	
+       	//player.actions.push(new action( actionsDEF[ 1 ] ));	
 		
     }
   }
@@ -675,6 +757,7 @@ var loaded = false;
 		
     }
   }
+  
   
          // player.Graphic.rotation.y = Math.PI/4; //up-and-left
 		 // player.Graphic.rotation.y = Math.PI + Math.PI*.25; //down-and-right
@@ -758,7 +841,7 @@ var loaded = false;
 					
 				    var scope = angular.element(levelScreen).scope();
 				    scope.$apply(function(){
-				        scope.Resources = 1000; //(player.LightSpeedGauge - player.LightSpeedGaugeCapacity);
+				        scope.Resources = playerStats.Resources;
 				    })
 					
 				//scene.dispose();

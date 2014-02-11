@@ -1,5 +1,6 @@
 var actionsDEF = [
 {
+	cost:100,
 	cooldown:50,
 	image:null,
 	shieldObj:null,
@@ -14,7 +15,88 @@ var actionsDEF = [
 		this.shieldObj.position.z = player.Graphic.position.z;
 	}
 },
-{
+{ //standard shot
+	cost:100,
+	cooldown:50,
+	refreshtime:.25,
+	image:null,
+	lastupdate:0,
+	init: function(){
+		//player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
+	},
+	behavior: function(){
+	    if((time-this.lastupdate) > this.refreshtime)
+	    {
+			var newbullet2 = bulletobj2.clone("bullet");
+			newbullet2.position.x = player.Graphic.position.x;
+			newbullet2.position.z = player.Graphic.position.z;
+			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+	   		this.lastupdate = time;
+	    }
+	}
+},
+{ //warp
+	cost:100,
+	cooldown:50,
+	image:null,
+	init: function(){
+		player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
+	},
+	behavior: function(){
+       	
+	}
+},
+{ //dual shot
+	cost:100,
+	cooldown:50,
+	refreshtime:.25,
+	image:null,
+	lastupdate:0,
+	init: function(){
+		//player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
+	},
+	behavior: function(){
+	    if((time-this.lastupdate) > this.refreshtime)
+	    {
+			var newbullet2 = bulletobj2.clone("bullet");
+			if(player.currentDirection!="left"&&player.currentDirection!="right"&&player.currentDirection!="up"&&player.currentDirection!="down"){
+				newbullet2.position.x = player.Graphic.position.x;
+				newbullet2.position.z = player.Graphic.position.z-5;
+			}
+			else{
+				newbullet2.position.x = player.Graphic.position.x-5;
+				newbullet2.position.z = player.Graphic.position.z-5;
+			}
+			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+			var newbullet3 = bulletobj2.clone("bullet");
+			if(player.currentDirection!='left'&&player.currentDirection!='right'&&player.currentDirection!='up'&&player.currentDirection!='down'){
+				newbullet3.position.x = player.Graphic.position.x;
+				newbullet3.position.z = player.Graphic.position.z+5;
+			}		
+			else{
+				newbullet3.position.x = player.Graphic.position.x+5;
+				newbullet3.position.z = player.Graphic.position.z+5;	
+			}
+
+			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+	   		this.lastupdate = time;
+	    }
+	}
+},
+{ //spread shot
+	cost:100,
+	cooldown:50,
+	image:null,
+	init: function(){
+		player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
+	},
+	behavior: function(){
+       	
+	}
+}
+,
+{ //rapid shot
+	cost:100,
 	cooldown:50,
 	image:null,
 	init: function(){
