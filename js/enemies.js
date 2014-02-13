@@ -3,7 +3,7 @@ var enemiesDEF = [
 { // 0 - init enemy, tea cup	
 	baseHealth: 25,
 	healthIncrease: 10,
-	speed: 1,
+	speed: 60,
 	reSpawn: true,
 	value: 5,
 	size: 10,
@@ -68,7 +68,7 @@ var enemiesDEF = [
 	  this.enemy.animations.push(animationBox2);
 	  scene.beginAnimation(this.enemy, 0, 100, true);
 	  
-      var movementbox = new BABYLON.Animation("movementbox", "position", (Math.random()*25)+5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      var movementbox = new BABYLON.Animation("movementbox", "position", this.speed, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
       keys = [];
 
@@ -110,9 +110,9 @@ var enemiesDEF = [
 { // 1- regular rock	
 	baseHealth: 50,
 	healthIncrease: 10,
-	speed: 1,
+	speed: 30,
 	reSpawn: true,
-	value: 113,
+	value: 13,
 	size: 20,
 	init: function(){
 		this.enemy = rock.clone("test");
@@ -175,7 +175,7 @@ var enemiesDEF = [
 	  this.enemy.animations.push(animationBox2);
 	  scene.beginAnimation(this.enemy, 0, 100, true);
 	  
-      var movementbox = new BABYLON.Animation("movementbox", "position", (Math.random()*25)+5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      var movementbox = new BABYLON.Animation("movementbox", "position", this.speed, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
       keys = [];
 
@@ -217,7 +217,7 @@ var enemiesDEF = [
 { // 2- long rock	
 	baseHealth: 50,
 	healthIncrease: 10,
-	speed: 1,
+	speed: 45,
 	reSpawn: true,
 	value: 5,
 	size: 20,
@@ -282,7 +282,7 @@ var enemiesDEF = [
 	  this.enemy.animations.push(animationBox2);
 	  scene.beginAnimation(this.enemy, 0, 100, true);
 	  
-      var movementbox = new BABYLON.Animation("movementbox", "position", (Math.random()*25)+5, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+      var movementbox = new BABYLON.Animation("movementbox", "position", this.speed, BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
       keys = [];
 

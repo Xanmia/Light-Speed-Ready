@@ -135,8 +135,9 @@ var loaded = false;
 	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
 		bulletobj.isVisible =false;
 		bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain", 4,3, scene);
-	    //bulletobj2 = BABYLON.Mesh.CreateCylinder("bulletmain", 10,3,3,2, scene);
-		//bulletobj2.rotation.z = Math.PI*.5;
+	    missle = BABYLON.Mesh.CreateCylinder("bulletmain", 10,3,3,2, scene);
+		missle.rotation.z = Math.PI*.5;
+		
 		bulletobj2.position.x = 15000;
 		bulletobj2.position.z = 15000;
 		//bulletobj2.isVisible =false;
@@ -356,7 +357,7 @@ scene.activeCamera.attachControl(canvas);
 	
 		this.actions.push(new action( actionsDEF[ 1 ] ));	
 	this.actions.push(new action( actionsDEF[ 3 ] ));	
-	  
+	  	this.actions.push(new action( actionsDEF[ 4 ] ));
 	this.explode = function(){
 			if (this.Graphic._isEnabled == true){
 			this.Graphic.isVisible = false;

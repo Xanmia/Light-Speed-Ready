@@ -17,8 +17,8 @@ var actionsDEF = [
 },
 { //standard shot
 	cost:100,
-	cooldown:50,
-	refreshtime:.25,
+	cooldown:0,
+	refreshtime:.30,
 	image:null,
 	lastupdate:0,
 	init: function(){
@@ -48,8 +48,8 @@ var actionsDEF = [
 },
 { //dual shot
 	cost:100,
-	cooldown:50,
-	refreshtime:.25,
+	cooldown:0,
+	refreshtime:.35,
 	image:null,
 	lastupdate:0,
 	init: function(){
@@ -79,6 +79,26 @@ var actionsDEF = [
 			}
 
 			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+	   		this.lastupdate = time;
+	    }
+	}
+},
+{ //missle
+	cost:100,
+	cooldown:0,
+	refreshtime:5,
+	image:null,
+	lastupdate:0,
+	init: function(){
+		//player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
+	},
+	behavior: function(){
+	    if((time-this.lastupdate) > this.refreshtime)
+	    {
+			var missleobj = missle.clone("missle");
+			missleobj.position.x = player.Graphic.position.x;
+			missleobj.position.z = player.Graphic.position.z;
+			player.bullet.push({'graphic': missleobj, 'direction':player.currentDirection, 'damage': 50, 'particle': bulletpart});
 	   		this.lastupdate = time;
 	    }
 	}
