@@ -464,7 +464,7 @@ var loaded = false;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
 				{
-					this.bullet[totalB].graphic.position.z += this.speed * BABYLON.Tools.GetDeltaTime() + this.bulletSpeed * BABYLON.Tools.GetDeltaTime();
+					this.bullet[totalB].graphic.position.z += this.speed * 2 + this.bulletSpeed * 2;
 				}
 				else if (this.bullet[totalB].direction == "left")
 				{
