@@ -1,5 +1,5 @@
 
-function BaseEnemy ( opt ) {
+function BaseEnemy ( opt, lvl ) {
 	for( var k in opt ) {
 		this[k] = opt[k];
 	}
@@ -7,11 +7,12 @@ function BaseEnemy ( opt ) {
 	this.setup = this.setup || function(){};
 	this.death = this.death || function(){};
 	
-	this.level = 0;
+	this.level = lvl;
+	this.value += this.level;
 	this.health = this.baseHealth + (this.level*this.healthIncrease);
-	var maxHealth = this.baseHealth + (this.level*this.healthIncrease);
+	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
 		this.init();
-
+		
   	var background = BABYLON.Mesh.CreatePlane("COUNT", 20, scene);
   	background.material = new BABYLON.StandardMaterial("background", scene);
   	background.rotation.y = Math.PI;
@@ -19,10 +20,12 @@ function BaseEnemy ( opt ) {
   	background.rotation.z = Math.PI + (Math.PI/2);
     background.position.x = 10000;
     background.position.z = 10000;
-  	var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+  	
+		//var background = xpmessage.clone("xpmessage");
+	var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
   	background.material.diffuseTexture = backgroundTexture;
   	backgroundTexture.drawText("+"+this.value, null, 350, "bold 325px Segoe UI", "white", "#555555");
-
+	
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
 	
 	enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
@@ -62,6 +65,7 @@ function BaseEnemy ( opt ) {
 		}
 		else{
 			this.level = level;
+			
 		}
 			
 		  	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
@@ -75,8 +79,6 @@ function BaseEnemy ( opt ) {
 	this.explode = function()
 	{
 		if (this.enemy._isEnabled == true){
-			//explodeaudio.volume =.2;
-			//explodeaudio.play();
 			player.addResources(this.value);
 			this.enemy.animations = [];
 			this.enemy.setEnabled(false);
@@ -89,59 +91,49 @@ function BaseEnemy ( opt ) {
       var animationBox3 = new BABYLON.Animation("tutoAnimation3", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 
-      // Animation keys
       var keys = [];
-      //At the animation key 0, the value of scaling is "1"
+
       keys.push({
           frame: 0,
           value: 1.0
       });
 
-      //At the animation key 20, the value of scaling is "0.2"
       keys.push({
           frame: 50,
           value: .5
       });
 
-      //At the animation key 100, the value of scaling is "1"
       keys.push({
           frame: 100,
           value: .0
       });
-
-      //Pluging the sequence of keys to the animation object
       animationBox3.setKeys(keys);
   	  background.animations.push(animationBox3);
   
         var animationBox4 = new BABYLON.Animation("tutoAnimation4", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                         BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 
-        // Animation keys
         var keys = [];
-        //At the animation key 0, the value of scaling is "1"
         keys.push({
             frame: 0,
             value: .0
         });
-
-        //At the animation key 20, the value of scaling is "0.2"
         keys.push({
             frame: 50,
             value: -100
         });
 
-        //At the animation key 100, the value of scaling is "1"
         keys.push({
             frame: 100,
             value: -200
         });
 
-        //Pluging the sequence of keys to the animation object
+
         animationBox4.setKeys(keys);
     	  background.animations.push(animationBox4);
   
   		scene.beginAnimation(background, 0, 100, false);
-		
+	
 		if(this.reSpawn==true){
 			this.respawn();
 		}
@@ -167,7 +159,10 @@ function BaseEnemy ( opt ) {
 	}
 	
 	this.dispose = function(){
+		this.enemy.animations = [];
+		backgroundTexture.dispose();
 		enemyexplosion.dispose();
+		background.animations = [];
 		background.dispose();
 		this.enemy.dispose();
 	}

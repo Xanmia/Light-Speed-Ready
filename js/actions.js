@@ -49,7 +49,7 @@ var actionsDEF = [
 { //dual shot
 	cost:100,
 	cooldown:0,
-	refreshtime:.35,
+	refreshtime:.30,
 	image:null,
 	lastupdate:0,
 	init: function(){
@@ -67,7 +67,7 @@ var actionsDEF = [
 				newbullet2.position.x = player.Graphic.position.x-5;
 				newbullet2.position.z = player.Graphic.position.z-5;
 			}
-			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart});
 			var newbullet3 = bulletobj2.clone("bullet");
 			if(player.currentDirection!='left'&&player.currentDirection!='right'&&player.currentDirection!='up'&&player.currentDirection!='down'){
 				newbullet3.position.x = player.Graphic.position.x;
@@ -78,7 +78,7 @@ var actionsDEF = [
 				newbullet3.position.z = player.Graphic.position.z+5;	
 			}
 
-			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': 25, 'particle': bulletpart});
+			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart});
 	   		this.lastupdate = time;
 	    }
 	}

@@ -4,6 +4,7 @@ html, body, canvas {
          padding: 0;
          margin: 0;
          overflow: hidden;
+		    background-color: #000000;
  }
 
 .dir{
@@ -35,6 +36,13 @@ html, body, canvas {
    color:#888888;
 }
 
+.mainFontSmallMid{
+	font-family: 'Montserrat', sans-serif;
+   font-size:15px;
+   font-weight:bold;
+   color:#888888;
+}
+
 .mainFontSmall{
 	font-family: 'Montserrat', sans-serif;
    font-size:12px;
@@ -47,7 +55,6 @@ html, body, canvas {
 	bottom:5px; 
 	left:50%;
 	margin-left:-300px;
-	z-index:5;
 	padding:5px;
 	text-align:center;
 }
@@ -80,11 +87,31 @@ html, body, canvas {
 	text-align:center;
 }
 
+.titlecenter{
+	position:absolute;
+	top:50%;
+	left:50%;
+    margin-left:-300px;
+margin-top:-200px;
+}
+
+#TitleScreen{
+	position:absolute;
+	width:100%;
+	height:100%;
+	background-color:#000000;
+	text-align:center;
+     z-index:5;
+}
+
 #deadScreen{
      margin-left:-300px;
 	margin-top:-100px;
 	color:red;
     display:none;
+}
+#LevelUp{
+	opacity:.0;
 }
 
 .topMiddle{
@@ -96,6 +123,32 @@ html, body, canvas {
    text-align:center;
 }
 
+#lightSpeedReminder{
+	position:fixed;
+	top:48px; 
+	left:50%;
+	margin-left:-85px;
+	padding:1px;
+   text-align:center;
+   display: none;
+}
+.topUnderMiddle{
+	position:fixed;
+	top:100px; 
+	left:50%;
+	margin-left:-175px;
+	padding:1px;
+   text-align:center;
+}
+#lightSpeedReady{
+	position:fixed;
+	top:100px; 
+	left:50%;
+	margin-left:-475px;
+	padding:1px;
+   text-align:center;
+   opacity:.0;
+}
 .gauge{
     width:200px;
     height:30px;
