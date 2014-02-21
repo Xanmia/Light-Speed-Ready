@@ -48,7 +48,7 @@ var loaded = false;
 	 var LightSpeedMessage = document.getElementById('lightSpeedReady');
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
-	 var targetFPS = 60, adjmovement =1;
+	 var targetdelta = 17, adjmovement =1;
 	
      var engine; //= new BABYLON.Engine(canvas,false)
       
@@ -400,25 +400,25 @@ var loaded = false;
 			}
 			else if (up){
 	            player.Graphic.rotation.y = Math.PI/2; 
-	   		 	movex = -this.speed;// need stat on player object
+	   		 	movex = -(this.speed*adjmovement);// need stat on player object
 	   		 	movez = 0;
 				this.currentDirection = "up";
 			}
 			else if (down){
 	            player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
-	   		 	movex = this.speed;// need stat on player object
+	   		 	movex = this.speed*adjmovement;// need stat on player object
 	   		 	movez = 0;
 				this.currentDirection = "down";
 			}
 			else if (left){
 	            player.Graphic.rotation.y = 0; 
-	   		 	movez = -this.speed;// need stat on player object
+	   		 	movez = -(this.speed*adjmovement);// need stat on player object
 	   		 	movex = 0;
 				this.currentDirection = "left";
 			}
 			else if (right){
 	            this.Graphic.rotation.y = Math.PI; 
-	   			movez = this.speed; // need stat on player object
+	   			movez = this.speed*adjmovement; // need stat on player object
 	   		 	movex = 0;
 				this.currentDirection = "right";
 			}
@@ -464,7 +464,7 @@ var loaded = false;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
 				{
-					this.bullet[totalB].graphic.position.z += this.speed * 2 + this.bulletSpeed * 2;
+					this.bullet[totalB].graphic.position.z += this.speed * adjmovement + this.bulletSpeed * adjmovement;
 				}
 				else if (this.bullet[totalB].direction == "left")
 				{
@@ -518,7 +518,7 @@ var loaded = false;
 	  StatusText.innerHTML = BABYLON.Tools.GetFps().toFixed() + " FPS";
 	    StatusText.innerHTML = BABYLON.Tools.GetDeltaTime() + " FPS";
 	  
-	  adjmovement = (1-(BABYLON.Tools.GetFps() / targetFPS)) + 1;
+	  adjmovement = (BABYLON.Tools.GetDeltaTime() / targetdelta);
 	  
 	  
 	  if(loaded==true){
