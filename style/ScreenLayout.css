@@ -21,6 +21,7 @@ html, body, canvas {
    text-align:center;
  	border:2px solid #888888;
  	border-radius:5px;
+	display:none;
 }
 
 .mainFont{
@@ -92,7 +93,7 @@ html, body, canvas {
 	top:50%;
 	left:50%;
     margin-left:-300px;
-margin-top:-200px;
+    margin-top:-200px;
 }
 
 #TitleScreen{
@@ -101,7 +102,8 @@ margin-top:-200px;
 	height:100%;
 	background-color:#000000;
 	text-align:center;
-     z-index:5;
+    z-index:5;
+	color:white;
 }
 
 #deadScreen{

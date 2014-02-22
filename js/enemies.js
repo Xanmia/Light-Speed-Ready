@@ -425,11 +425,11 @@ var enemiesDEF = [
 			this.setup();
 		}
 		var direction = Math.atan2( dy, dx );
-		this.enemy.rotation.z += this.rotation;
-		this.enemy.rotation.x += this.rotation;
-		this.enemy.rotation.y += this.rotation;
-    	  this.enemy.position.x += Math.cos( direction ) * this.speed;
-    	  this.enemy.position.z += Math.sin( direction ) * this.speed;
+		this.enemy.rotation.z += this.rotation*adjmovement;
+		this.enemy.rotation.x += this.rotation*adjmovement;
+		this.enemy.rotation.y += this.rotation*adjmovement;
+    	  this.enemy.position.x += Math.cos( direction ) * (this.speed*adjmovement);
+    	  this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
 	}
 },
 { // 5 - follower	
@@ -509,11 +509,11 @@ var enemiesDEF = [
 		var dy = player.Graphic.position.z - this.enemy.position.z;
 
 		var direction = Math.atan2( dy, dx );
-		this.enemy.rotation.z += this.rotation;
-		this.enemy.rotation.x += this.rotation;
-		this.enemy.rotation.y += this.rotation;
-    	  this.enemy.position.x += Math.cos( direction ) * this.speed;
-    	  this.enemy.position.z += Math.sin( direction ) * this.speed;
+		this.enemy.rotation.z += this.rotation*adjmovement;
+		this.enemy.rotation.x += this.rotation*adjmovement;
+		this.enemy.rotation.y += this.rotation*adjmovement;
+    	  this.enemy.position.x += Math.cos( direction ) * (this.speed*adjmovement);
+    	  this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
 	}
 },
 { // 6- long rock	
@@ -597,12 +597,12 @@ var enemiesDEF = [
 			this.setup();
 		}
 
-		this.enemy.rotation.z += this.rotationZ;
-		this.enemy.rotation.x += this.rotationX;
-		this.enemy.rotation.y += this.rotationY;
+		this.enemy.rotation.z += this.rotationZ*adjmovement;
+		this.enemy.rotation.x += this.rotationX*adjmovement;
+		this.enemy.rotation.y += this.rotationY*adjmovement;
 		
-    	this.enemy.position.x += Math.cos( direction ) * this.speed;
-    	this.enemy.position.z += Math.sin( direction ) * this.speed;
+    	this.enemy.position.x += Math.cos( direction ) * (this.speed*adjmovement);
+    	this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
 	}
 }
 
