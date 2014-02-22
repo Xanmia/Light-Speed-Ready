@@ -90,7 +90,6 @@ function BaseEnemy ( opt, lvl ) {
 	
       var animationBox3 = new BABYLON.Animation("xpmessage1", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
-
       var keys = [];
 
       keys.push({

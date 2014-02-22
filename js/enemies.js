@@ -347,7 +347,7 @@ var enemiesDEF = [
 },
 { // 4 - dumb drifter	
 	baseHealth: 25,
-	healthIncrease: 10,
+	healthIncrease: 20,
 	speed: 1.5,
 	reSpawn: true,
 	value: 5,
@@ -434,7 +434,7 @@ var enemiesDEF = [
 },
 { // 5 - follower	
 	baseHealth: 25,
-	healthIncrease: 10,
+	healthIncrease: 20,
 	speed: .75,
 	reSpawn: true,
 	value: 5,
@@ -518,7 +518,7 @@ var enemiesDEF = [
 },
 { // 6- long rock	
 	baseHealth: 50,
-	healthIncrease: 20,
+	healthIncrease: 30,
 	speed: 2,
 	reSpawn: true,
 	value: 5,

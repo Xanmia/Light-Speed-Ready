@@ -102,28 +102,5 @@ var actionsDEF = [
 	   		this.lastupdate = time;
 	    }
 	}
-},
-{ //spread shot
-	cost:100,
-	cooldown:50,
-	image:null,
-	init: function(){
-		player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
-	},
-	behavior: function(){
-       	
-	}
-}
-,
-{ //rapid shot
-	cost:100,
-	cooldown:50,
-	image:null,
-	init: function(){
-		player.Graphic.position = new BABYLON.Vector3(((Math.random()*1400)-700),0,((Math.random()*1400)-700)); 
-	},
-	behavior: function(){
-       	
-	}
 }
 ];

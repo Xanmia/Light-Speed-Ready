@@ -16,7 +16,7 @@
 	<div id="TitleScreen">
 		<div class="titlecenter">
 			<img src="images/title.png" width="600" height="300" alt="Title">
-			<div class="mainFontSmall"><button class="mainFont" onclick="StartGame();">--New Game--</button>
+			<div class="mainFontSmall"><div id="gameStart"><button class="mainFont" onclick="StartGame();">--New Game--</button></div>
 				<div><br>Developed by <a href="http://twitter.com/xanmia">@Xanmia</a><br>Asteroid models by Seraphz</div>
 		   </div>
 	   </div>
@@ -28,7 +28,7 @@
 	<div class="mainFontLarge" id="lightSpeedReady"> Light Speed Ready! <div class="mainFont"> Press (R) for the next level </div></div>
 	<div class="topUnderMiddle mainFontLarge" id="LevelUp"> <div id="levelNumber">LEVEL</div> <div class="mainFont"> Congratulations! You Leveled Up! </div><div class="mainFontSmall"> + Health + Damage</div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
-	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onclick="Reset();">--New Game--</button></div></div>
+	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onclick="StartGame();">--New Game--</button></div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
           <canvas id="viewport"></canvas>
 		  <a href="https://github.com/Xanmia/Light-Speed-Ready"><img style="position: absolute; top: 0; right: 0; border: 0;  z-index:6;" src="https://github-camo.global.ssl.fastly.net/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
@@ -40,13 +40,13 @@
 <script src="js/action.js" type="text/javascript" ></script>
 <script src="js/levels.js" type="text/javascript" ></script>
 <script src="js/levelingDefs.js" type="text/javascript" ></script>
-
+<script src="js/content.js" type="text/javascript" ></script>
        <script type="text/javascript">
-var loaded = false;
+    var loaded = false;
 	var level = 0, healthIncrease=5;
 	var up, down, left, right;
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
-	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, comet, lastSetup, xpmessage;
+	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, lastSetup, xpmessage;
      var canvas = document.getElementById("viewport");
 	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
 	 var ResourcesText  = document.getElementById('Resources');
@@ -60,106 +60,15 @@ var loaded = false;
 	 var LightSpeedMessage = document.getElementById('lightSpeedReady');
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
+
 	 var targetdelta = 17, adjmovement =1;
 	
      var engine; //= new BABYLON.Engine(canvas,false)
-      
-	playerStats = new PlayerStats();
 	   
-	SceneSetup();
-
-	function SceneSetup()
-	{
-		if(engine != null)
-		{
-			engine.dispose()
-		}
-		if(scene != null)
-		{
-			scene.dispose();
-		}
-		LevelText.innerHTML = level;
-		DeathScreen.style.display = "none";
-		loaded = false;
-		movex=0, movez=0, movey=0;
-		enemies=[];
-		time = 0;
-	    engine = new BABYLON.Engine(canvas,false)
-		   //engine.setHardwareScalingLevel(1);
-		scene = new BABYLON.Scene(engine);
-		scene.clearColor = new BABYLON.Color3(0,0,0);
-        camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 500, new BABYLON.Vector3(0, 0, 0), scene);
-  	    camera.maxZ = 20000;
-	    bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
-		bulletobj.isVisible =false;
-		bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain", 4,3, scene);
-		bulletobj2.position.x = 15000;
-		bulletobj2.position.z = 15000;
-		//bulletobj2.isVisible =false;
-		bulletpart = new BABYLON.ParticleSystem("bulletPart", 100, scene);
-		  bulletpart.emitter = bulletobj2; 
-	      bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
-	      bulletpart.maxEmitBox = new BABYLON.Vector3(0, 1, 0); // To...
-	      bulletpart.direction1 = new BABYLON.Vector3(-100, -100, -100);
-	      bulletpart.direction2 = new BABYLON.Vector3(100, 100, 100);
-	    bulletpart.maxLifeTime = .1;
-		bulletpart.maxSize = 5.5;
-		bulletpart.disposeOnStop = false;
-		
-
-        BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
-           newMeshes[0].scaling.x = .015;
-           newMeshes[0].scaling.y = .015;
-           newMeshes[0].scaling.z = .015;
-           playerGraphic = newMeshes[0];
-		   player = undefined;
-   		   player = new Player();
-
-   		   camera.target = player.BoundingBox.position;
-   	  	   loaded = true;
-     	});
-		
-        BABYLON.SceneLoader.ImportMesh("", "", "assets/a6.babylon", scene, function (newMeshes, particleSystems) {
-        	rock =  newMeshes[0];
-			rock.position.x = 850;
-			rock.position.z = 850; 
-			
-   		 	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
-   		 	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
-   		  	rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
-   		  	rockmaterial.specularColor = new BABYLON.Color3(0, 0, 0);		
-     	    rockmaterial.diffuseTexture.uScale = .5;
-     	    rockmaterial.diffuseTexture.vScale = .5;
-   		   //rockmaterial.wireframe = true;
-     		rock.material = rockmaterial;
-	   	      
-		        BABYLON.SceneLoader.ImportMesh("", "", "assets/a5.babylon", scene, function (newMeshes, particleSystems) {
-		        	rock2 =  newMeshes[0];
-					rock2.position.x = 850;
-					rock2.position.z = 850; 
-			  	  	rock2.material = rockmaterial;
-					SceneReset();
-				});	
-        });
-		
-		
-	   light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
-	   // 
-      //scene.activeCamera.attachControl(canvas);
-		
- 	   skybox = BABYLON.Mesh.CreateBox("skyBox", 1500.0, scene);
- 	   skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
- 	   skyboxMaterial.backFaceCulling = false;
- 	   skybox.material = skyboxMaterial;
- 	   skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
- 	   skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
- 	   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
- 	   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	}
+	ContentLoad(document.getElementById('gameStart'));
 
 	function SceneReset()
 	{
-		
 		var lvlDetails = levels.filter(function(value){ return value.level==level; });
 		if(lvlDetails.length==0){lvlDetails = lastSetup;}
 		
@@ -177,80 +86,41 @@ var loaded = false;
 			}
 			lastSetup = lvlDetails;
 		
-
-		LevelText.innerHTML = level;
 		camera.radius = 500;
-		ResourcesText.innerHTML =  playerStats.Resources + "/" + playerStats.ShipCapacity;
-		lightSpeedReminder.style.display = "none";
+		LevelText.innerHTML = level;
 		
-		player.LightSpeedGauge = 0;
-		player.health = player.maxHealth;
-		//player.speed = playerStats.speed;
-		//player.bulletDamage = playerStats.bulletDamage;
-		//player.ShipCapacity = playerStats.ShipCapacity;
-		
-		HealthGauge.style.width = ((player.health / player.maxHealth)*100) + "%"; 
-		player.BoundingBox.position = new BABYLON.Vector3(0,0,0);
-		player.Graphic.position = new BABYLON.Vector3(0,0,0);
-	 	player.Graphic.rotation.x = 0; 
-     	player.Graphic.rotation.y = 0;
-		player.currentDirection = "left";
-		player.status = true;
+		player.reset();
 	    camera.target = player.BoundingBox.position;
 	}
 	
 	function StartGame(){
-		
-		playerStats = new PlayerStats();
-		level =0;
-		SceneSetup();
+	    player = new Player();
+		level = 0;
+		DeathScreen.style.display = "none";
 		titleScreen.style.display = "none";
+		SceneReset();
+		loaded = true;
 	}
-	
-	function Reset(){
-		playerStats = new PlayerStats();
-		scene.dispose();
-		level =0;
-		SceneSetup();
-	}
- 
-	function PlayerStats(){
-		this.Resources = 0;
-		this.maxHealth = 100;
-		this.ShipCapacity = 200;
-		this.speed = 1;
-		this.bulletDamage = 25;
-		this.Defense = 0;
-		this.ResourceCollectionIncrease = 0;
-		
-		this.bulletSpeed = 2;
-	}
-	
 
 	function Player(){
 		this.shipLevel = 0;
 		this.currentLevelStats = levelingDefs[ this.shipLevel ];
 		this.actions = [];
-		this.playerStats = playerStats;
 		this.LightSpeedGauge =0;
 		this.Resources = 0;
 		this.status = true;
 		this.LightSpeedGaugeCapacity = 100;
-		this.ShipCapacity = playerStats.ShipCapacity;
-		this.health = playerStats.maxHealth;
-		this.maxHealth = playerStats.maxHealth;
-		this.shipSheildCap = 0;
-		this.speed = playerStats.speed;
-		this.bulletSpeed = playerStats.bulletSpeed;
-		this.bulletDamage = playerStats.bulletDamage;
+		this.health = this.currentLevelStats.health;
+		this.maxHealth = this.currentLevelStats.health;
+		this.speed = this.currentLevelStats.speed;
+		this.bulletSpeed = 2;
+		this.bulletDamage = this.currentLevelStats.damage;
 		var bulletsshot = 0;
-		 this.currentDirection = "left";
-		this.bullet = [];//  BABYLON.Mesh.CreateSphere("bullet", 2,2, scene);
+	    this.currentDirection = "left";
+		this.bullet = [];
 
 		lightSpeedGauge.style.width = 0;
-		ResourcesText.innerHTML =  this.playerStats.Resources + "/" + this.ShipCapacity;
 		HealthGauge.style.width = "100%"; 
-		
 		
 		this.BoundingBox = BABYLON.Mesh.CreateBox("Player", 13.0, scene);
    	  	var material = new BABYLON.StandardMaterial("texture1", scene);
@@ -259,9 +129,10 @@ var loaded = false;
 		this.BoundingBox.isVisible = false;
 		this.Graphic = playerGraphic;
 		
+		this.actions.push(new action( actionsDEF[ 3 ] ));	
 
-          particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
-         particleSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+      particleSystem = new BABYLON.ParticleSystem("jetstream", 100, scene);
+      particleSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
       particleSystem.emitter = this.Graphic; 
       particleSystem.minEmitBox = new BABYLON.Vector3(-100, 100, 700);
       particleSystem.maxEmitBox = new BABYLON.Vector3(100, 100, 800); 
@@ -284,9 +155,10 @@ var loaded = false;
       particleSystem.minEmitPower = 1;
       particleSystem.maxEmitPower = 3;
       particleSystem.updateSpeed = 0.005;
-      particleSystem.disposeOnStop = true;
+      particleSystem.disposeOnStop = false;
       particleSystem.start();
 
+	 
 	  this.levelUp = function(){
 		  this.shipLevel += 1;
 		  LevelNumberView.innerHTML = "LEVEL " + this.shipLevel;
@@ -301,11 +173,30 @@ var loaded = false;
 		  HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
 	  }
 
-	this.actions.push(new action( actionsDEF[ 3 ] ));	
+	  this.reset = function(){
+  		this.LightSpeedGauge = 0;
+	
+  		this.health = player.maxHealth;
+		lightSpeedReminder.style.display = "none";
+  		HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
+  		this.BoundingBox.position = new BABYLON.Vector3(0,0,0);
+  		this.Graphic.position = new BABYLON.Vector3(0,0,0);
+  	 	this.Graphic.rotation.x = 0; 
+       	this.Graphic.rotation.y = 0;
+  		this.currentDirection = "left";
+  		movex=0, movez=0, movey=0;
+		this.status = true;
+		this.Graphic._isEnabled = true;
+	  }
 
 	this.explode = function(){
 		this.status= false;
 			if (this.Graphic._isEnabled == true){
+				var totalB = this.bullet.length;
+				while(totalB--){
+					this.bullet[totalB].graphic.dispose();
+				}
+				this.bullet = [];
 			this.Graphic.isVisible = false;
 			this.Graphic._isEnabled = false;
             explosionSystem = new BABYLON.ParticleSystem("particlesexplode", 2000, scene);
@@ -352,15 +243,76 @@ var loaded = false;
 	 
 		}
 		
+		this.JumpToLightSpeed = function(){
+
+		    if(this.LightSpeedGauge >= this.LightSpeedGaugeCapacity && this.health > 0 && this.status == true){
 		
-		this.shoot = function(){
-		  if(this.Graphic._isEnabled == true){
-		  }
+				this.status = false;
+	
+				var totalB = this.bullet.length;
+				while(totalB--){
+						this.bullet[totalB].graphic.dispose();
+						this.bullet.splice(totalB, 1);
+				}
+		
+				movex=0;
+				movez=0;
+
+		  	    this.Graphic.position.y += -100;
+		  	    this.BoundingBox.position.y +=-100
+		
+		        var cameramovein = new BABYLON.Animation("cameraMove", "radius", 80, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+		                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+		        var Camerakeys = [];
+		        Camerakeys.push({
+		            frame: 0,
+		            value: camera.radius
+		        });
+		        Camerakeys.push({
+		            frame: 50,
+		            value: 50
+		        });
+		        Camerakeys.push({
+		            frame: 100,
+		            value: 25
+		        });
+		        cameramovein.setKeys(Camerakeys);
+		    	camera.animations.push(cameramovein);
+		
+			 	this.Graphic.rotation.x = Math.PI + (Math.PI/2); 
+		     	this.Graphic.rotation.y = (Math.PI/2); 
+				scene.beginAnimation(camera, 0, 100, false, 0, function(){
+			        var shiplightspeedMove = new BABYLON.Animation("shiplightspeedMove", "position.y", 40, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+			                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
+			        var shipkeys = [];
+			        shipkeys.push({
+			            frame: 0,
+			            value: player.Graphic.position.y
+			        });
+			        shipkeys.push({
+			            frame: 25,
+			            value: player.Graphic.position.y - 1000
+			        });
+			        shipkeys.push({
+			            frame: 100,
+			            value: player.Graphic.position.y - 13000
+			        });
+			        shiplightspeedMove.setKeys(shipkeys);
+			    	player.Graphic.animations.push(shiplightspeedMove);
+
+					scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
+						level +=1;
+						SceneReset();
+					});
+			
+				});	
+		    }
 		}
 		
 		this.addResources = function(resAmount){
 			var amount = resAmount;
 			this.Resources += resAmount;
+			
 		    if (this.LightSpeedGauge < this.LightSpeedGaugeCapacity){
 				amount = (this.LightSpeedGauge + amount > this.LightSpeedGaugeCapacity) ? (this.LightSpeedGaugeCapacity - this.LightSpeedGauge) : amount;
 		    	this.LightSpeedGauge += 5;//amount;
@@ -369,23 +321,24 @@ var loaded = false;
 					LightSpeedMessage.style.opacity = 1;
 					lightSpeedReminder.style.display = "block";
 				}
-			}
-
-			
-				
+			}	
 				
 		}
 		
 		this.update = function(){	
 			 LevelUpMessage.style.opacity -= .004;	
 			 LightSpeedMessage.style.opacity -= .01;
-			if(player.status == true){
-				 
+		 if(player.status == false){return;}
+	   		 if(this.health <= 0){
+	   			 this.explode();
+				 return;
+	   		 } 
+			 
 			var nextlvlneed = levelingDefs[ this.shipLevel+1 ].need;
 				if( this.Resources >=  nextlvlneed){
 					this.levelUp();
 				}
-				
+	////////////player movement
 			if (up && right){
 				this.Graphic.rotation.y = Math.PI*.75; //up-and-right
 				movez = (this.speed*adjmovement)/1.5; 
@@ -434,11 +387,9 @@ var loaded = false;
 	   		 	movex = 0;
 				this.currentDirection = "right";
 			}
-			//player.shoot();
-		 if(this.health <= 0){
-			 this.explode();
-		 } 
-		 if(this.Graphic._isEnabled == true){
+	/////////////////////////
+
+	//////////Bound player inside sky box
 			 if(this.Graphic.position.x < 700 && this.Graphic.position.x > -700){
 			 	this.Graphic.position.x += movex;
 				this.BoundingBox.position.x = this.Graphic.position.x;
@@ -459,19 +410,17 @@ var loaded = false;
 				movez = 0;
  				this.BoundingBox.position.z = this.Graphic.position.z;
 			 }
-
-	      }
-		    	lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
-				ResourcesText.innerHTML = "Current Ship Level:" + this.shipLevel + " <br/> Next Level:" + this.Resources + "/" + nextlvlneed;
-				
-				
-				//}
+	//////////////////////
+	/////////TODO: move outside update/////
+		    lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
+			ResourcesText.innerHTML = "Current Ship Level:" + this.shipLevel + " <br/> Next Level:" + this.Resources + "/" + nextlvlneed;
+	/////////////////////////////////			
 			var activeActions = this.actions.length;
 			while(activeActions--){
 				this.actions[activeActions].update();
 			}
 			
-		
+	//////player bullet movement///////	
 			var totalB = this.bullet.length;
 			while(totalB--){
 				if (this.bullet[totalB].direction == "right")
@@ -510,41 +459,34 @@ var loaded = false;
 					this.bullet[totalB].graphic.position.z += (this.speed + this.bulletSpeed)/1.5;
 					this.bullet[totalB].graphic.position.x += (this.speed + this.bulletSpeed)/1.5;
 				}
-				
+		////////////////////////////////////
+		/////////bullet disposal///////////		
 				if (this.bullet[totalB].graphic.position.z > 750 || this.bullet[totalB].graphic.position.z < -750 || this.bullet[totalB].graphic.position.x > 750 || this.bullet[totalB].graphic.position.x < -750)
 				{
 					this.bullet[totalB].graphic.dispose();
 					this.bullet.splice(totalB, 1);
 				}
-			}
+		////////////////////////////////////		
 		  }
 		}
 		
-		//end
 	}
 
   engine.runRenderLoop(function () {
 	
-	  time= time+(1/BABYLON.Tools.GetFps());
-	  
+	  time= time+(1/BABYLON.Tools.GetFps());  
 	  StatusText.innerHTML = BABYLON.Tools.GetFps().toFixed() + " FPS";
-	 //   StatusText.innerHTML = scene.getAnimationRatio() + " FPS";
-	  
 	  adjmovement = scene.getAnimationRatio();
 	  
-	  
 	  if(loaded==true){
-		  player.update();
-
-
-
+		 player.update();
 		  /////////check for collisions/////////////////////
-	  enemiesCount = enemies.length;
-	  while(enemiesCount--){
-		  bulletCount = player.bullet.length;
-		  	   enemies[enemiesCount].update();
-		  while(bulletCount--){
-			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
+	  	enemiesCount = enemies.length;
+	  	while(enemiesCount--){
+			enemies[enemiesCount].update();
+			bulletCount = player.bullet.length;
+		  	while(bulletCount--){
+				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
 				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
 				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
 					//player.bullet[bulletCount].particle.stop();
@@ -552,24 +494,19 @@ var loaded = false;
 					player.bullet[bulletCount].graphic.dispose();
 					player.bullet.splice(bulletCount, 1);
 				  }
-			  }
-		  }
-		  
-		  
-		  if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
-		  {
-			if(enemies[enemiesCount].enemy.isVisible == true){
-				 player.Damage(enemies[enemiesCount].maxHealth/2);
-				 enemies[enemiesCount].Damage(player.maxHealth/2);
-			}
-			
-		  }
-
-	  }
-	  ////////////////////complete collisions/////////////
-  }
+			  	}
+		  	}
+		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
+		  	{
+				if(enemies[enemiesCount].enemy.isVisible == true){
+					player.Damage(enemies[enemiesCount].maxHealth/2);
+				 	enemies[enemiesCount].Damage(player.maxHealth/2);
+				}
+		  	}
+		}
+	  	////////////////////complete collisions/////////////
+  	 }
     scene.render();
-
   });
 
 
@@ -616,76 +553,13 @@ var loaded = false;
       if(loaded==true){
 		 down = true;
       }
-  }
+  	}
   
-  if(event.keyCode == 82){
+  	if(event.keyCode == 82){
+	  player.JumpToLightSpeed();
+  	}
 
-    if(player.LightSpeedGauge >= player.LightSpeedGaugeCapacity && player.health > 0 && player.status == true){
-		
-		player.status = false;
-		
-		var totalB = player.bullet.length;
-		while(totalB--){
-				player.bullet[totalB].graphic.dispose();
-				player.bullet.splice(totalB, 1);
-		}
-		
-		movex=0;
-		movez=0;
-		
-  	    player.Graphic.position.y += -100;
-  	    player.BoundingBox.position.y +=-100
-		
-        var cameramovein = new BABYLON.Animation("tutoAnimation3", "radius", 80, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
-        var Camerakeys = [];
-        Camerakeys.push({
-            frame: 0,
-            value: camera.radius
-        });
-        Camerakeys.push({
-            frame: 50,
-            value: 50
-        });
-        Camerakeys.push({
-            frame: 100,
-            value: 25
-        });
-        cameramovein.setKeys(Camerakeys);
-    	camera.animations.push(cameramovein);
-		
-	 	player.Graphic.rotation.x = Math.PI + (Math.PI/2); 
-     	player.Graphic.rotation.y = (Math.PI/2); 
-		scene.beginAnimation(camera, 0, 100, false, 0, function(){
-	        var shiplightspeedMove = new BABYLON.Animation("shiplightspeedMove", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-	                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
-	        var shipkeys = [];
-	        shipkeys.push({
-	            frame: 0,
-	            value: player.Graphic.position.y
-	        });
-	        shipkeys.push({
-	            frame: 25,
-	            value: player.Graphic.position.y - 1000
-	        });
-	        shipkeys.push({
-	            frame: 100,
-	            value: player.Graphic.position.y - 13000
-	        });
-	        shiplightspeedMove.setKeys(shipkeys);
-	    	player.Graphic.animations.push(shiplightspeedMove);
-
-			scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
-				level +=1;
-				SceneReset();
-			});
-			
-		});	
-    }
-
-}
-
-}
+  }	
 
        </script>
 </html>
