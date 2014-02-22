@@ -185,9 +185,9 @@ var loaded = false;
 		
 		player.LightSpeedGauge = 0;
 		player.health = player.maxHealth;
-		player.speed = playerStats.speed;
-		player.bulletDamage = playerStats.bulletDamage;
-		player.ShipCapacity = playerStats.ShipCapacity;
+		//player.speed = playerStats.speed;
+		//player.bulletDamage = playerStats.bulletDamage;
+		//player.ShipCapacity = playerStats.ShipCapacity;
 		
 		HealthGauge.style.width = ((player.health / player.maxHealth)*100) + "%"; 
 		player.BoundingBox.position = new BABYLON.Vector3(0,0,0);
@@ -542,7 +542,7 @@ var loaded = false;
 	  enemiesCount = enemies.length;
 	  while(enemiesCount--){
 		  bulletCount = player.bullet.length;
-		  	   enemies[enemiesCount].update(player.Graphic.position.x,player.Graphic.position.z);
+		  	   enemies[enemiesCount].update();
 		  while(bulletCount--){
 			  if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
 				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){

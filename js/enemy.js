@@ -68,8 +68,8 @@ function BaseEnemy ( opt, lvl ) {
 			
 		}
 			
-		  	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
-		    this.health = this.maxHealth;
+		  	this.maxHealth = (this.baseHealth + (this.level*this.healthIncrease));
+		    this.health = (this.baseHealth + (this.level*this.healthIncrease));
 		    
 			this.enemy.setEnabled(true);
 	    	this.enemy.isVisible = true;
@@ -88,7 +88,7 @@ function BaseEnemy ( opt, lvl ) {
 
 			enemyexplosion.start();
 	
-      var animationBox3 = new BABYLON.Animation("tutoAnimation3", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      var animationBox3 = new BABYLON.Animation("xpmessage1", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 
       var keys = [];
@@ -110,7 +110,7 @@ function BaseEnemy ( opt, lvl ) {
       animationBox3.setKeys(keys);
   	  background.animations.push(animationBox3);
   
-        var animationBox4 = new BABYLON.Animation("tutoAnimation4", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+        var animationBox4 = new BABYLON.Animation("xpmessage2", "position.y", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                         BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 
         var keys = [];
