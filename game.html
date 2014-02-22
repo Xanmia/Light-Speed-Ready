@@ -101,7 +101,8 @@
 		SceneReset();
 		loaded = true;
 	}
-
+	
+	////move to own file
 	function Player(){
 		this.shipLevel = 0;
 		this.currentLevelStats = levelingDefs[ this.shipLevel ];
@@ -396,7 +397,7 @@
 			 }
 			 else
 			 {
- 			 	this.Graphic.position.x += movex * -2;
+ 			 	this.Graphic.position.x += movex * -5;
 				movex = 0;
  				this.BoundingBox.position.x = this.Graphic.position.x;
 			 }
@@ -406,7 +407,7 @@
 			 }
 			 else
 			 {
- 			 	this.Graphic.position.z += movez * -2;
+ 			 	this.Graphic.position.z += movez * -5;
 				movez = 0;
  				this.BoundingBox.position.z = this.Graphic.position.z;
 			 }
