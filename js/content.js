@@ -21,6 +21,7 @@ function ContentLoad(startDisplay)
 	time = 0;
 	
     bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
+	bulletobj.position.y = -500;
 	bulletobj.isVisible =false;
 	
 	bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain", 4,3, scene);
@@ -44,7 +45,24 @@ function ContentLoad(startDisplay)
     rockmaterial.diffuseTexture.uScale = .5;
     rockmaterial.diffuseTexture.vScale = .5;
 	
-	
+    var backgroundSystem = new BABYLON.ParticleSystem("backgroundSystem", 6000, scene);
+   	backgroundSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+	backgroundSystem.emitter = bulletobj; 
+	backgroundSystem.minEmitBox = new BABYLON.Vector3(2000, 0, 2000); 
+	backgroundSystem.maxEmitBox = new BABYLON.Vector3(-2000, 0, -2000);
+	backgroundSystem.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
+	backgroundSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+	backgroundSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+	backgroundSystem.minSize = 2.0;
+	backgroundSystem.maxSize = 5.5;
+	backgroundSystem.minLifeTime = 50;
+	backgroundSystem.maxLifeTime = 500;
+	backgroundSystem.emitRate = 50000;
+	backgroundSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+	backgroundSystem.targetStopDuration = 0;
+	backgroundSystem.disposeOnStop = false;
+	backgroundSystem.start();
+	/*
    skybox = BABYLON.Mesh.CreateBox("skyBox", 1500.0, scene);
    skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
    skyboxMaterial.backFaceCulling = false;
@@ -53,9 +71,9 @@ function ContentLoad(startDisplay)
    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	
+	*/
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
-
+  scene.activeCamera.attachControl(canvas);
     BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
        newMeshes[0].scaling.x = .015;
        newMeshes[0].scaling.y = .015;

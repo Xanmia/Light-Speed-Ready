@@ -166,3 +166,23 @@ function BaseEnemy ( opt, lvl ) {
 		this.enemy.dispose();
 	}
 };
+
+function SpawnEnemies()
+{
+	var lvlDetails = levels.filter(function(value){ return value.level==level; });
+	if(lvlDetails.length==0){lvlDetails = lastSetup;}
+	
+		var xEnemy = enemies.length;
+		while(xEnemy--){
+			enemies[xEnemy].dispose();
+		}
+		enemies = [];
+		var typeAmount = lvlDetails[0].types.length;
+		while(typeAmount--){
+			var totalItems = lvlDetails[0].types[typeAmount].total;
+			while(totalItems--){
+				enemies.push(new BaseEnemy( enemiesDEF[ lvlDetails[0].types[typeAmount].type ], level ));
+			}
+		}
+		lastSetup = lvlDetails;
+}

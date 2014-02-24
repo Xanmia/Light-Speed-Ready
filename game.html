@@ -45,9 +45,11 @@
     var loaded = false;
 	var level = 0, healthIncrease=5;
 	var up, down, left, right;
-     var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, camera, time,scene, light0, skybox, skyboxMaterial;
+	 var adjmovement =1;
+     var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, engine, camera, time,scene, light0, skybox, skyboxMaterial;
 	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, lastSetup, xpmessage;
-     var canvas = document.getElementById("viewport");
+    
+	 var canvas = document.getElementById("viewport");
 	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
 	 var ResourcesText  = document.getElementById('Resources');
 	 var HealthGauge  = document.getElementById('healthGauge');
@@ -60,31 +62,12 @@
 	 var LightSpeedMessage = document.getElementById('lightSpeedReady');
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
-
-	 var targetdelta = 17, adjmovement =1;
-	
-     var engine; //= new BABYLON.Engine(canvas,false)
 	   
 	ContentLoad(document.getElementById('gameStart'));
 
 	function SceneReset()
 	{
-		var lvlDetails = levels.filter(function(value){ return value.level==level; });
-		if(lvlDetails.length==0){lvlDetails = lastSetup;}
-		
-			var xEnemy = enemies.length;
-			while(xEnemy--){
-				enemies[xEnemy].dispose();
-			}
-			enemies = [];
-			var typeAmount = lvlDetails[0].types.length;
-			while(typeAmount--){
-				var totalItems = lvlDetails[0].types[typeAmount].total;
-				while(totalItems--){
-					enemies.push(new BaseEnemy( enemiesDEF[ lvlDetails[0].types[typeAmount].type ], level ));
-				}
-			}
-			lastSetup = lvlDetails;
+		SpawnEnemies();
 		
 		camera.radius = 500;
 		LevelText.innerHTML = level;
@@ -327,16 +310,17 @@
 		}
 		
 		this.update = function(){	
-			 LevelUpMessage.style.opacity -= .004;	
-			 LightSpeedMessage.style.opacity -= .01;
+
 		 if(player.status == false){return;}
 	   		 if(this.health <= 0){
 	   			 this.explode();
 				 return;
 	   		 } 
+			 LevelUpMessage.style.opacity -= .004;	
+			 LightSpeedMessage.style.opacity -= .01;
 			 
 			var nextlvlneed = levelingDefs[ this.shipLevel+1 ].need;
-				if( this.Resources >=  nextlvlneed){
+				if( this.Resources >= nextlvlneed){
 					this.levelUp();
 				}
 	////////////player movement
@@ -355,13 +339,13 @@
 			else if (down && right){
 				movez = (this.speed*adjmovement)/1.5;
 				movex = (this.speed*adjmovement)/1.5;
-				this.Graphic.rotation.y = Math.PI + Math.PI*.25; //down-and-right
+				this.Graphic.rotation.y = Math.PI *1.25; //down-and-right
 				 this.currentDirection = "downright";
 			}
 			else if (down && left){
 				movex = (this.speed*adjmovement)/1.5;
 				movez = -(this.speed*adjmovement)/1.5;
-				 this.Graphic.rotation.y = Math.PI + (Math.PI*.75); //down and left
+				 this.Graphic.rotation.y = Math.PI*1.75; //down and left
 				  this.currentDirection = "downleft";
 			}
 			else if (up){
@@ -371,7 +355,7 @@
 				this.currentDirection = "up";
 			}
 			else if (down){
-	            player.Graphic.rotation.y = Math.PI + (Math.PI/2); 
+	            player.Graphic.rotation.y = Math.PI*1.5; 
 	   		 	movex = this.speed*adjmovement;// need stat on player object
 	   		 	movez = 0;
 				this.currentDirection = "down";
@@ -430,35 +414,35 @@
 				}
 				else if (this.bullet[totalB].direction == "left")
 				{
-					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed);
+					this.bullet[totalB].graphic.position.z += -(this.speed * adjmovement + this.bulletSpeed*adjmovement);
 				}
 				else if (this.bullet[totalB].direction == "up")
 				{
-					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed);
+					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement);
 				}
 				else if (this.bullet[totalB].direction == "down")
 				{
-					this.bullet[totalB].graphic.position.x += this.speed + this.bulletSpeed;
+					this.bullet[totalB].graphic.position.x += this.speed*adjmovement + this.bulletSpeed*adjmovement;
 				}
 				else if (this.bullet[totalB].direction == "upleft")
 				{
-					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed)/1.5;
-					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.z += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
+					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
 				}
 				else if (this.bullet[totalB].direction == "upright")
 				{
-					this.bullet[totalB].graphic.position.x += -(this.speed + this.bulletSpeed)/1.5;
-					this.bullet[totalB].graphic.position.z += (this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
+					this.bullet[totalB].graphic.position.z += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
 				}
 				else if (this.bullet[totalB].direction == "downleft")
 				{
-					this.bullet[totalB].graphic.position.z += -(this.speed + this.bulletSpeed)/1.5;
-					this.bullet[totalB].graphic.position.x += (this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.z += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
+					this.bullet[totalB].graphic.position.x += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
 				}
 				else if (this.bullet[totalB].direction == "downright")
 				{
-					this.bullet[totalB].graphic.position.z += (this.speed + this.bulletSpeed)/1.5;
-					this.bullet[totalB].graphic.position.x += (this.speed + this.bulletSpeed)/1.5;
+					this.bullet[totalB].graphic.position.z += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
+					this.bullet[totalB].graphic.position.x += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
 				}
 		////////////////////////////////////
 		/////////bullet disposal///////////		
