@@ -12,20 +12,22 @@ function BaseEnemy ( opt, lvl ) {
 	this.health = this.baseHealth + (this.level*this.healthIncrease);
 	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
 		this.init();
-		
-  	var background = BABYLON.Mesh.CreatePlane("COUNT", 20, scene);
-  	background.material = new BABYLON.StandardMaterial("background", scene);
+	
+  	var background = BABYLON.Mesh.CreatePlane("COUNT", 13, scene);
+	background.isVisible = false;
+  	//background.material = new BABYLON.StandardMaterial("background", scene);
   	background.rotation.y = Math.PI;
   	background.rotation.x = Math.PI/2;
-  	background.rotation.z = Math.PI + (Math.PI/2);
-    background.position.x = 10000;
-    background.position.z = 10000;
+  	background.rotation.z = Math.PI *1.5;
+    //background.position.x = 10000;
+    //background.position.z = 10000;
   	
+	/*
 		//var background = xpmessage.clone("xpmessage");
-	var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+   var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
   	background.material.diffuseTexture = backgroundTexture;
   	backgroundTexture.drawText("+"+this.value, null, 350, "bold 325px Segoe UI", "white", "#555555");
-	
+	*/
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
 	
 	enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
@@ -87,7 +89,7 @@ function BaseEnemy ( opt, lvl ) {
 		    background.position.z = this.enemy.position.z;
 
 			enemyexplosion.start();
-	
+			/*
       var animationBox3 = new BABYLON.Animation("xpmessage1", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
       var keys = [];
@@ -132,7 +134,7 @@ function BaseEnemy ( opt, lvl ) {
     	  background.animations.push(animationBox4);
   
   		scene.beginAnimation(background, 0, 100, false);
-	
+	*/
 		if(this.reSpawn==true){
 			this.respawn();
 		}
@@ -159,10 +161,10 @@ function BaseEnemy ( opt, lvl ) {
 	
 	this.dispose = function(){
 		this.enemy.animations = [];
-		backgroundTexture.dispose();
+		//backgroundTexture.dispose();
 		enemyexplosion.dispose();
-		background.animations = [];
-		background.dispose();
+		//background.animations = [];
+		//background.dispose();
 		this.enemy.dispose();
 	}
 };

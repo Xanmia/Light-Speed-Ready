@@ -41,6 +41,8 @@
 <script src="js/levels.js" type="text/javascript" ></script>
 <script src="js/levelingDefs.js" type="text/javascript" ></script>
 <script src="js/content.js" type="text/javascript" ></script>
+<script src="js/utils.js" type="text/javascript"></script>
+
        <script type="text/javascript">
     var loaded = false;
 	var level = 0, healthIncrease=5;
@@ -112,7 +114,7 @@
 		HealthGauge.style.width = "100%"; 
 		
 		this.BoundingBox = BABYLON.Mesh.CreateBox("Player", 13.0, scene);
-		this.cameraFollower = BABYLON.Mesh.CreateBox("cameraFollower", 13.0, scene);
+		this.cameraFollower = BABYLON.Mesh.CreateBox("cameraFollower", 1.0, scene);
    	  	var material = new BABYLON.StandardMaterial("texture1", scene);
         material.wireframe = true;
 		this.BoundingBox.material = material;
@@ -247,8 +249,10 @@
 	
 				var totalB = this.bullet.length;
 				while(totalB--){
-						this.bullet[totalB].graphic.dispose();
-						this.bullet.splice(totalB, 1);
+  					this.bullet[totalB].particle.stop();
+					this.bullet[totalB].particle.dispose();
+					this.bullet[totalB].graphic.dispose();
+					this.bullet.splice(totalB, 1);
 				}
 		
 				movex=0;
@@ -392,10 +396,10 @@
 				 movex = 0;
 			  }
 			  if(this.Graphic.position.x + movex < playingBoardSize && this.Graphic.position.x + movex > -playingBoardSize) { ///500
-			  	 this.cameraFollower.position.x = this.Graphic.position.x;
+			  	 this.cameraFollower.position.x = this.Graphic.position.x+movex;
 			  }
 			  if (this.Graphic.position.z + movez < playingBoardSize && this.Graphic.position.z + movez > -playingBoardSize){ //500
-	 			 this.cameraFollower.position.z = this.Graphic.position.z;
+	 			 this.cameraFollower.position.z = this.Graphic.position.z+movez;
 			  }
 			 this.Graphic.position.z += movez;
 			 this.Graphic.position.x += movex;
@@ -455,6 +459,8 @@
 		/////////bullet disposal///////////		
 				if (this.bullet[totalB].graphic.position.z > width+50 || this.bullet[totalB].graphic.position.z < -width-50 || this.bullet[totalB].graphic.position.x > height+50 || this.bullet[totalB].graphic.position.x < -height-50)
 				{
+  					this.bullet[totalB].particle.stop();
+					this.bullet[totalB].particle.dispose();
 					this.bullet[totalB].graphic.dispose();
 					this.bullet.splice(totalB, 1);
 				}
@@ -480,7 +486,8 @@
   				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
   				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
   				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
-  					//player.bullet[bulletCount].particle.stop();
+  					player.bullet[bulletCount].particle.stop();
+					player.bullet[bulletCount].particle.dispose();
   					player.bullet[bulletCount].graphic.isVisible = false; 
   					player.bullet[bulletCount].graphic.dispose();
   					player.bullet.splice(bulletCount, 1);

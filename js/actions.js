@@ -59,6 +59,9 @@ var actionsDEF = [
 	    if((time-this.lastupdate) > this.refreshtime)
 	    {
 			var newbullet2 = bulletobj2.clone("bullet");
+			var bulletpart2 = bulletpart.clone("bulletpart");
+			bulletpart2.emitter = newbullet2; 
+				bulletpart2.start();
 			if(player.currentDirection!="left"&&player.currentDirection!="right"&&player.currentDirection!="up"&&player.currentDirection!="down"){
 				newbullet2.position.x = player.Graphic.position.x;
 				newbullet2.position.z = player.Graphic.position.z-5;
@@ -67,8 +70,11 @@ var actionsDEF = [
 				newbullet2.position.x = player.Graphic.position.x-5;
 				newbullet2.position.z = player.Graphic.position.z-5;
 			}
-			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart});
+			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart2});
 			var newbullet3 = bulletobj2.clone("bullet");
+			var bulletpart3 = bulletpart.clone("bulletpart");
+			bulletpart3.emitter = newbullet3; 
+					bulletpart3.start();
 			if(player.currentDirection!='left'&&player.currentDirection!='right'&&player.currentDirection!='up'&&player.currentDirection!='down'){
 				newbullet3.position.x = player.Graphic.position.x;
 				newbullet3.position.z = player.Graphic.position.z+5;
@@ -78,7 +84,7 @@ var actionsDEF = [
 				newbullet3.position.z = player.Graphic.position.z+5;	
 			}
 
-			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart});
+			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': bulletpart3});
 	   		this.lastupdate = time;
 	    }
 	}

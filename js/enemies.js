@@ -17,58 +17,14 @@ var enemiesDEF = [
 
 	},
 	setup: function() {
-	  var rando = Math.round(Math.random()*1);
-	  var x = ((Math.random()*1500)-750);
-	  var z = ((Math.random()*1500)-750);
-	  if (rando == 1)
-	  {
-		  if (x > 0){
-		  	x = height+100;
-		  }
-		  else
-		  {
-			  x=-height-100;
-		  }	
-	  }
-	  else
-	  {
-		  if (z > 0){
-		  	z = width+100;
-		  }
-		  else
-		  {
-			  z=-width-100;
-		  }	
-	  }
-	  this.enemy.position.x = x;
-	  this.enemy.position.z = z;
-	 
-	  rando = Math.round(Math.random()*1);
-	  x = ((Math.random()*1500)-750);
-	  z = ((Math.random()*1500)-750);
-	 	  if (rando == 1)
-	 	  {
-	 		  if (x > 0){
-	 		  	x = height+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  x=-height-100;
-	 		  }	
-	 	  }
-	 	  else
-	 	  {
-	 		  if (z > 0){
-	 		  	z = width+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  z=-width-100;
-	 		  }	
-	 	  }
-	  
-	  this.toX = x;
-	  this.toZ = z;
+
+	  var loc = SpawnOutside();
+	  this.enemy.position.x = loc.x;
+	  this.enemy.position.z = loc.z;
+
+	  loc = SpawnOutside();
+	  this.toX = loc.x;
+	  this.toZ = loc.z;
 	  this.rotation =  Math.random() * .02;
 	  
 	},
@@ -104,58 +60,13 @@ var enemiesDEF = [
 
 	},
 	setup: function() {
-	  var rando = Math.round(Math.random()*1);
-	  var x = ((Math.random()*1500)-750);
-	  var z = ((Math.random()*1500)-750);
-	  if (rando == 1)
-	  {
-		  if (x > 0){
-		  	x = height+100;
-		  }
-		  else
-		  {
-			  x=-height-100;
-		  }	
-	  }
-	  else
-	  {
-		  if (z > 0){
-		  	z = width+100;
-		  }
-		  else
-		  {
-			  z=-width-100;
-		  }	
-	  }
-	  this.enemy.position.x = x;
-	  this.enemy.position.z = z;
-	 
-	  rando = Math.round(Math.random()*1);
-	  x = ((Math.random()*1500)-750);
-	  z = ((Math.random()*1500)-750);
-	 	  if (rando == 1)
-	 	  {
-	 		  if (x > 0){
-	 		  	x = height+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  x=-height-100;
-	 		  }	
-	 	  }
-	 	  else
-	 	  {
-	 		  if (z > 0){
-	 		  	z = width+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  z=-width-100;
-	 		  }	
-	 	  }
+	  	  var loc = SpawnOutside();
+	  this.enemy.position.x = loc.x;
+	  this.enemy.position.z = loc.z;
 	  
-	  this.toX = x;
-	  this.toZ = z;
+	  loc = SpawnOutside();
+	  this.toX = loc.x;
+	  this.toZ = loc.z;
 	  	  this.rotation =  Math.random() * .02;
 	},
 	behavior: function() {
@@ -187,58 +98,14 @@ var enemiesDEF = [
 		this.speed  = (Math.random()*this.speed) + .1;
 	},
 	setup: function() {
-	  var rando = Math.round(Math.random()*1);
-	  var x = ((Math.random()*1500)-750);
-	  var z = ((Math.random()*1500)-750);
-	  if (rando == 1)
-	  {
-		  if (x > 0){
-		  	x = height+100;
-		  }
-		  else
-		  {
-			  x=-height-100;
-		  }	
-	  }
-	  else
-	  {
-		  if (z > 0){
-		  	z = width+100;
-		  }
-		  else
-		  {
-			  z=-width-100;
-		  }	
-	  }
-	  this.enemy.position.x = x;
-	  this.enemy.position.z = z;
-	  
-	  rando = Math.round(Math.random()*1);
-	  x = ((Math.random()*1500)-750);
-	  z = ((Math.random()*1500)-750);
-	 	  if (rando == 1)
-	 	  {
-	 		  if (x > 0){
-	 		  	x = height+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  x=-height-100;
-	 		  }	
-	 	  }
-	 	  else
-	 	  {
-	 		  if (z > 0){
-	 		  	z = width+100;
-	 		  }
-	 		  else
-	 		  {
-	 			  z=-width-100;
-	 		  }	
-	 	  }
-	  
-	  this.toX = x;
-	  this.toZ = z;
+
+	    var loc = SpawnOutside();
+	  this.enemy.position.x = loc.x;
+	  this.enemy.position.z = loc.z;
+
+	  loc = SpawnOutside();
+	  this.toX = loc.x;
+	  this.toZ = loc.z;
 	  this.rotationX =  Math.random() * .02;
 	  this.rotationY =  Math.random() * .02;
 	  this.rotationZ =  Math.random() * .02;
