@@ -26,6 +26,7 @@ html, body, canvas {
    text-align:center;
  	border:2px solid #888888;
  	border-radius:5px;
+	display:none;
 }
 
 .mainFont{
