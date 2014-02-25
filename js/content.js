@@ -11,13 +11,7 @@ function ContentLoad(startDisplay)
     
 	camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 500, new BABYLON.Vector3(0, 0, 0), scene);
     camera.maxZ = 20000;
-	/*
-	LevelText.innerHTML = level;
-	DeathScreen.style.display = "none";
-	loaded = false;
-	movex=0, movez=0, movey=0;
-	enemies=[];
-	*/
+
 	time = 0;
 	
     bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
@@ -72,6 +66,7 @@ function ContentLoad(startDisplay)
    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 	*/
+	
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
  // scene.activeCamera.attachControl(canvas);
     BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {

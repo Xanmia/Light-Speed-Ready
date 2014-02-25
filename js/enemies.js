@@ -368,21 +368,21 @@ var enemiesDEF = [
 	  if (rando == 1)
 	  {
 		  if (x > 0){
-		  	x = 800;
+		  	x = height+100;
 		  }
 		  else
 		  {
-			  x=-800;
+			  x=-height-100;
 		  }	
 	  }
 	  else
 	  {
 		  if (z > 0){
-		  	z = 800;
+		  	z = width+100;
 		  }
 		  else
 		  {
-			  z=-800;
+			  z=-width-100;
 		  }	
 	  }
 	  this.enemy.position.x = x;
@@ -394,21 +394,21 @@ var enemiesDEF = [
 	 	  if (rando == 1)
 	 	  {
 	 		  if (x > 0){
-	 		  	x = 800;
+	 		  	x = height+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  x=-800;
+	 			  x=-height-100;
 	 		  }	
 	 	  }
 	 	  else
 	 	  {
 	 		  if (z > 0){
-	 		  	z = 800;
+	 		  	z = width+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  z=-800;
+	 			  z=-width-100;
 	 		  }	
 	 	  }
 	  
@@ -455,21 +455,21 @@ var enemiesDEF = [
 	  if (rando == 1)
 	  {
 		  if (x > 0){
-		  	x = 800;
+		  	x = height+100;
 		  }
 		  else
 		  {
-			  x=-800;
+			  x=-height-100;
 		  }	
 	  }
 	  else
 	  {
 		  if (z > 0){
-		  	z = 800;
+		  	z = width+100;
 		  }
 		  else
 		  {
-			  z=-800;
+			  z=-width-100;
 		  }	
 	  }
 	  this.enemy.position.x = x;
@@ -481,21 +481,21 @@ var enemiesDEF = [
 	 	  if (rando == 1)
 	 	  {
 	 		  if (x > 0){
-	 		  	x = 800;
+	 		  	x = height+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  x=-800;
+	 			  x=-height-100;
 	 		  }	
 	 	  }
 	 	  else
 	 	  {
 	 		  if (z > 0){
-	 		  	z = 800;
+	 		  	z = width+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  z=-800;
+	 			  z=-width-100;
 	 		  }	
 	 	  }
 	  
@@ -538,21 +538,21 @@ var enemiesDEF = [
 	  if (rando == 1)
 	  {
 		  if (x > 0){
-		  	x = 800;
+		  	x = height+100;
 		  }
 		  else
 		  {
-			  x=-800;
+			  x=-height-100;
 		  }	
 	  }
 	  else
 	  {
 		  if (z > 0){
-		  	z = 800;
+		  	z = width+100;
 		  }
 		  else
 		  {
-			  z=-800;
+			  z=-width-100;
 		  }	
 	  }
 	  this.enemy.position.x = x;
@@ -564,21 +564,21 @@ var enemiesDEF = [
 	 	  if (rando == 1)
 	 	  {
 	 		  if (x > 0){
-	 		  	x = 800;
+	 		  	x = height+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  x=-800;
+	 			  x=-height-100;
 	 		  }	
 	 	  }
 	 	  else
 	 	  {
 	 		  if (z > 0){
-	 		  	z = 800;
+	 		  	z = width+100;
 	 		  }
 	 		  else
 	 		  {
-	 			  z=-800;
+	 			  z=-width-100;
 	 		  }	
 	 	  }
 	  

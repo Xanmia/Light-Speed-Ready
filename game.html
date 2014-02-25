@@ -46,6 +46,8 @@
 	var level = 0, healthIncrease=5;
 	var up, down, left, right;
 	 var adjmovement =1;
+	 var playingBoardSize = 500;
+	 var height = playingBoardSize+200, width = playingBoardSize +(200 * (window.innerWidth/window.innerHeight));// additional for camera extend - fullsize of board
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, engine, camera, time,scene, light0, skybox, skyboxMaterial;
 	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, lastSetup, xpmessage;
     
@@ -65,6 +67,8 @@
 	   
 	ContentLoad(document.getElementById('gameStart'));
 
+	StatusText.innerHTML = window.innerWidth + "-" + window.innerHeight ;
+
 	function SceneReset()
 	{
 		SpawnEnemies();
@@ -73,7 +77,7 @@
 		LevelText.innerHTML = level;
 		
 		player.reset();
-	    camera.target = player.BoundingBox.position;
+	    camera.target = player.cameraFollower.position;
 	}
 	
 	function StartGame(){
@@ -107,10 +111,12 @@
 		HealthGauge.style.width = "100%"; 
 		
 		this.BoundingBox = BABYLON.Mesh.CreateBox("Player", 13.0, scene);
+		this.cameraFollower = BABYLON.Mesh.CreateBox("cameraFollower", 13.0, scene);
    	  	var material = new BABYLON.StandardMaterial("texture1", scene);
         material.wireframe = true;
 		this.BoundingBox.material = material;
 		this.BoundingBox.isVisible = false;
+		this.cameraFollower.isVisible = false;
 		this.Graphic = playerGraphic;
 		
 		this.actions.push(new action( actionsDEF[ 3 ] ));	
@@ -244,7 +250,7 @@
 
 		  	    this.Graphic.position.y += -100;
 		  	    this.BoundingBox.position.y +=-100
-		
+				    camera.target = player.BoundingBox.position;
 		        var cameramovein = new BABYLON.Animation("cameraMove", "radius", 80, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
 		                                                                        BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
 		        var Camerakeys = [];
@@ -374,27 +380,22 @@
 			}
 	/////////////////////////
 
-	//////////Bound player inside sky box
-			 if(this.Graphic.position.x < 700 && this.Graphic.position.x > -700){
-			 	this.Graphic.position.x += movex;
-				this.BoundingBox.position.x = this.Graphic.position.x;
-			 }
-			 else
-			 {
- 			 	this.Graphic.position.x += movex * -5;
-				movex = 0;
- 				this.BoundingBox.position.x = this.Graphic.position.x;
-			 }
-			 if(this.Graphic.position.z < 700 && this.Graphic.position.z > -700){
-			 	this.Graphic.position.z += movez;
-				this.BoundingBox.position.z = this.Graphic.position.z;
-			 }
-			 else
-			 {
- 			 	this.Graphic.position.z += movez * -5;
-				movez = 0;
- 				this.BoundingBox.position.z = this.Graphic.position.z;
-			 }
+	//////////Bound player inside sky box need width height of window for bounding
+			  if((this.Graphic.position.x + movex > height || this.Graphic.position.x + movex < -height) || (this.Graphic.position.z + movez > width || this.Graphic.position.z + movez < -width)){
+				 movez = 0;
+				 movex = 0;
+			  }
+			  if(this.Graphic.position.x + movex < playingBoardSize && this.Graphic.position.x + movex > -playingBoardSize) { ///500
+			  	 this.cameraFollower.position.x = this.Graphic.position.x;
+			  }
+			  if (this.Graphic.position.z + movez < playingBoardSize && this.Graphic.position.z + movez > -playingBoardSize){ //500
+	 			 this.cameraFollower.position.z = this.Graphic.position.z;
+			  }
+			 this.Graphic.position.z += movez;
+			 this.Graphic.position.x += movex;
+			 this.BoundingBox.position.x = this.Graphic.position.x;
+			 this.BoundingBox.position.z = this.Graphic.position.z;
+
 	//////////////////////
 	/////////TODO: move outside update/////
 		    lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
@@ -446,7 +447,7 @@
 				}
 		////////////////////////////////////
 		/////////bullet disposal///////////		
-				if (this.bullet[totalB].graphic.position.z > 750 || this.bullet[totalB].graphic.position.z < -750 || this.bullet[totalB].graphic.position.x > 750 || this.bullet[totalB].graphic.position.x < -750)
+				if (this.bullet[totalB].graphic.position.z > width+50 || this.bullet[totalB].graphic.position.z < -width-50 || this.bullet[totalB].graphic.position.x > height+50 || this.bullet[totalB].graphic.position.x < -height-50)
 				{
 					this.bullet[totalB].graphic.dispose();
 					this.bullet.splice(totalB, 1);
@@ -457,40 +458,46 @@
 		
 	}
 
+	scene.registerBeforeRender(function() {
+  	  time= time+(1/BABYLON.Tools.GetFps());  
+  	  //StatusText.innerHTML = BABYLON.Tools.GetFps().toFixed() + " FPS";
+  	  adjmovement = scene.getAnimationRatio();
+	  
+  	  if(loaded==true){
+  		 player.update();
+  		  /////////check for collisions/////////////////////
+  	  	enemiesCount = enemies.length;
+  	  	while(enemiesCount--){
+  			enemies[enemiesCount].update();
+  			bulletCount = player.bullet.length;
+  		  	while(bulletCount--){
+  				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
+  				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
+  				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
+  					//player.bullet[bulletCount].particle.stop();
+  					player.bullet[bulletCount].graphic.isVisible = false; 
+  					player.bullet[bulletCount].graphic.dispose();
+  					player.bullet.splice(bulletCount, 1);
+  				  }
+  			  	}
+  		  	}
+  		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
+  		  	{
+  				if(enemies[enemiesCount].enemy.isVisible == true){
+  					player.Damage(enemies[enemiesCount].maxHealth/2);
+  				 	enemies[enemiesCount].Damage(player.maxHealth/2);
+  				}
+  		  	}
+  		}
+  	  	////////////////////complete collisions/////////////
+    	 }
+		
+		
+	});
+
   engine.runRenderLoop(function () {
 	
-	  time= time+(1/BABYLON.Tools.GetFps());  
-	  StatusText.innerHTML = BABYLON.Tools.GetFps().toFixed() + " FPS";
-	  adjmovement = scene.getAnimationRatio();
-	  
-	  if(loaded==true){
-		 player.update();
-		  /////////check for collisions/////////////////////
-	  	enemiesCount = enemies.length;
-	  	while(enemiesCount--){
-			enemies[enemiesCount].update();
-			bulletCount = player.bullet.length;
-		  	while(bulletCount--){
-				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
-				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
-				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
-					//player.bullet[bulletCount].particle.stop();
-					player.bullet[bulletCount].graphic.isVisible = false; 
-					player.bullet[bulletCount].graphic.dispose();
-					player.bullet.splice(bulletCount, 1);
-				  }
-			  	}
-		  	}
-		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
-		  	{
-				if(enemies[enemiesCount].enemy.isVisible == true){
-					player.Damage(enemies[enemiesCount].maxHealth/2);
-				 	enemies[enemiesCount].Damage(player.maxHealth/2);
-				}
-		  	}
-		}
-	  	////////////////////complete collisions/////////////
-  	 }
+
     scene.render();
   });
 
