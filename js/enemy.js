@@ -146,7 +146,7 @@ function BaseEnemy ( opt, lvl ) {
 	 	if(this.health <= 0){
 		 	this.explode();
 	 	} 
-		//damage animation
+		/////TODO: damage animation
 	}
 	  
 	

@@ -6,6 +6,11 @@ html, body, canvas {
          overflow: hidden;
 		 background-color: #000000;
  }
+ 
+ .alert{
+	 color:red;
+	    font-size:20px;
+ }
 
 .dir{
    background-color: #ffffff;

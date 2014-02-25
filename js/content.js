@@ -1,6 +1,10 @@
 
 function ContentLoad(startDisplay)
 {
+    if (!BABYLON.Engine.isSupported()) {
+		startDisplay.innerHTML = "<div class='alert'>Sorry, your browser exudes awesomeness.<br> Just not awesome enough to play this game.<br>  Why don't you try IE 11, Firefox or Google Chrome instead.</div>";
+		startDisplay.style.display = "block";
+	}
 	if(engine != null){engine.dispose()}
 	if(scene != null){scene.dispose();}
 	loaded = false;
@@ -56,16 +60,7 @@ function ContentLoad(startDisplay)
 	backgroundSystem.targetStopDuration = 0;
 	backgroundSystem.disposeOnStop = false;
 	backgroundSystem.start();
-	/*
-   skybox = BABYLON.Mesh.CreateBox("skyBox", 1500.0, scene);
-   skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-   skyboxMaterial.backFaceCulling = false;
-   skybox.material = skyboxMaterial;
-   skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-   skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-   skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/skybox", scene);
-   skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	*/
+
 	
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
  // scene.activeCamera.attachControl(canvas);

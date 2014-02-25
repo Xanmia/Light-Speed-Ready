@@ -26,7 +26,7 @@
 	<div class="topMiddle mainFont">Light Speed Gauge<div class="gauge"><div class="statusGaugeInside" id="lightspeedGauge"></div></div>
 	</div> <div id="lightSpeedReminder" class="mainFontSmallMid"> Press (R) for the next level </div>
 	<div class="mainFontLarge" id="lightSpeedReady"> Light Speed Ready! <div class="mainFont"> Press (R) for the next level </div></div>
-	<div class="topUnderMiddle mainFontLarge" id="LevelUp"> <div id="levelNumber">LEVEL</div> <div class="mainFont"> Congratulations! You Leveled Up! </div><div class="mainFontSmall"> + Health + Damage</div></div>
+	<div class="topUnderMiddle mainFontLarge" id="LevelUp"> <div id="levelNumber">LEVEL</div> <div class="mainFont"> Congratulations! You Leveled Up! </div><div id="levelUpDetails" class="mainFontSmall"> + Health + Damage</div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
 	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onclick="StartGame();">--New Game--</button></div></div>
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
@@ -61,13 +61,14 @@
 	 var DeathScreen = document.getElementById('deadScreen');
 	 var LevelNumberView = document.getElementById('levelNumber');
 	 var LevelUpMessage = document.getElementById('LevelUp');
+	 var LevelUpDetails = document.getElementById('levelUpDetails');
 	 var LightSpeedMessage = document.getElementById('lightSpeedReady');
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
+	 
 	   
 	ContentLoad(document.getElementById('gameStart'));
 
-	StatusText.innerHTML = window.innerWidth + "-" + window.innerHeight ;
 
 	function SceneReset()
 	{
@@ -155,6 +156,10 @@
 		  LevelUpMessage.style.opacity = 1;
 		  
 		  this.currentLevelStats = levelingDefs[ this.shipLevel ];
+		  LevelUpDetails.innerHTML = "";
+		  if(this.speed<this.currentLevelStats.speed){LevelUpDetails.innerHTML += " + Ship Speed";}
+		  if(this.health<this.currentLevelStats.health){LevelUpDetails.innerHTML += " + Health";}
+		  if(this.bulletDamage<this.currentLevelStats.damage){LevelUpDetails.innerHTML += " + Damage";}
 		  this.speed = this.currentLevelStats.speed;
 		  this.health = this.currentLevelStats.health;
 		  this.maxHealth = this.currentLevelStats.health;
@@ -222,6 +227,7 @@
 		
 		this.Damage = function(intDamage)
 		{
+				/////TODO: damage animation
 			if(this.status == true){
 				this.health -= intDamage;
 				HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
