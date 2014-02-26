@@ -52,7 +52,7 @@
 	 var playingBoardSize = 500;
 	 var height = playingBoardSize+200, width = playingBoardSize +(200 * (window.innerWidth/window.innerHeight));// additional for camera extend - fullsize of board
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, engine, camera, time,scene, light0, skybox, skyboxMaterial;
-	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, lastSetup, xpmessage;
+	 var player, playerStats, rock, rock2, cup, enemyexplosion,bulletobj,box, lastSetup, xpmessage, particleTexture;
     
 	 var canvas = document.getElementById("viewport");
 	 var lightSpeedGauge  = document.getElementById('lightspeedGauge');
@@ -124,8 +124,8 @@
 		this.Graphic = playerGraphic;
 		
 		this.actions.push(new action( actionsDEF[ 3 ] ));	
-
-      jetSystem = new BABYLON.ParticleSystem("jetstream", 100, scene);
+		
+      jetSystem = new BABYLON.ParticleSystem("jetstream", 25, scene);
       jetSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
       jetSystem.emitter = this.Graphic; 
       jetSystem.minEmitBox = new BABYLON.Vector3(-100, 100, 700);
@@ -133,25 +133,21 @@
       jetSystem.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
       jetSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
       jetSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-      jetSystem.minSize = 1.0;
-      jetSystem.maxSize = 7.5;
+      jetSystem.minSize = 10.0;
+      jetSystem.maxSize = 15.5;
       jetSystem.minLifeTime = 0.01;
-      jetSystem.maxLifeTime = .25;
-      jetSystem.emitRate = 1500;
+      jetSystem.maxLifeTime = .20;
+      jetSystem.emitRate = 150;
       jetSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-      jetSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
-      jetSystem.direction1 = new BABYLON.Vector3(-7, 8, 3);
-      jetSystem.direction2 = new BABYLON.Vector3(7, 8, -3);
-      jetSystem.minAngularSpeed = 0;
-      jetSystem.maxAngularSpeed = Math.PI;
-
+      jetSystem.direction1 = new BABYLON.Vector3(-6, 8, 3);
+      jetSystem.direction2 = new BABYLON.Vector3(6, 8, -3);
       jetSystem.targetStopDuration = 0;
       jetSystem.minEmitPower = 1;
       jetSystem.maxEmitPower = 3;
       jetSystem.updateSpeed = 0.005;
       jetSystem.disposeOnStop = false;
       jetSystem.start();
-
+	  
 	 
 	  this.levelUp = function(){
 		  this.shipLevel += 1;
@@ -198,7 +194,7 @@
 			this.Graphic.isVisible = false;
 			this.Graphic._isEnabled = false;
             explosionSystem = new BABYLON.ParticleSystem("particlesexplode", 2000, scene);
-           explosionSystem.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+           explosionSystem.particleTexture = particleTexture;//new BABYLON.Texture("images/Flare.png", scene);
         explosionSystem.emitter = this.BoundingBox; 
         explosionSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0); 
         explosionSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
@@ -220,7 +216,7 @@
         explosionSystem.minEmitPower = 1;
         explosionSystem.maxEmitPower = 100;
         explosionSystem.updateSpeed = 0.005;
-        explosionSystem.disposeOnStop = true;
+        explosionSystem.disposeOnStop = false;
         explosionSystem.start();
 		DeathScreen.style.display = "block";
 	    ////show you died and request reset/start over
@@ -250,8 +246,8 @@
 	
 				var totalB = this.bullet.length;
 				while(totalB--){
-  					this.bullet[totalB].particle.stop();
-					this.bullet[totalB].particle.dispose();
+  					//this.bullet[totalB].particle.stop();
+					//this.bullet[totalB].particle.dispose();
 					this.bullet[totalB].graphic.dispose();
 					this.bullet.splice(totalB, 1);
 				}
@@ -460,8 +456,8 @@
 		/////////bullet disposal///////////		
 				if (this.bullet[totalB].graphic.position.z > width+50 || this.bullet[totalB].graphic.position.z < -width-50 || this.bullet[totalB].graphic.position.x > height+50 || this.bullet[totalB].graphic.position.x < -height-50)
 				{
-  					this.bullet[totalB].particle.stop();
-					this.bullet[totalB].particle.dispose();
+  					//this.bullet[totalB].particle.stop();
+					//this.bullet[totalB].particle.dispose();
 					this.bullet[totalB].graphic.dispose();
 					this.bullet.splice(totalB, 1);
 				}
@@ -473,22 +469,23 @@
 
 	scene.registerBeforeRender(function() {
   	  time= time+(1/BABYLON.Tools.GetFps());  
-  	  //StatusText.innerHTML = BABYLON.Tools.GetFps().toFixed() + " FPS";
+  	 // StatusText.innerHTML = scene.getActiveParticles();// BABYLON.Tools.GetFps().toFixed() + " FPS";
   	  adjmovement = scene.getAnimationRatio();
 	  
-  	  if(loaded==true){
+  	  if( loaded==true){
   		 player.update();
   		  /////////check for collisions/////////////////////
   	  	enemiesCount = enemies.length;
   	  	while(enemiesCount--){
   			enemies[enemiesCount].update();
+			if(player.status == true){
   			bulletCount = player.bullet.length;
   		  	while(bulletCount--){
   				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
   				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
   				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
-  					player.bullet[bulletCount].particle.stop();
-					player.bullet[bulletCount].particle.dispose();
+  					//player.bullet[bulletCount].particle.stop();
+					//player.bullet[bulletCount].particle.dispose();
   					player.bullet[bulletCount].graphic.isVisible = false; 
   					player.bullet[bulletCount].graphic.dispose();
   					player.bullet.splice(bulletCount, 1);
@@ -497,11 +494,12 @@
   		  	}
   		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
   		  	{
-  				if(enemies[enemiesCount].enemy.isVisible == true && player.status == true){
+  				if(enemies[enemiesCount].enemy.isVisible == true){
   					player.Damage(enemies[enemiesCount].maxHealth/2);
   				 	enemies[enemiesCount].Damage(player.maxHealth/2);
   				}
   		  	}
+		  }
   		}
   	  	////////////////////complete collisions/////////////
     	 }
@@ -510,8 +508,7 @@
 	});
 
   engine.runRenderLoop(function () {
-	
-
+	   StatusText.innerHTML = scene.getActiveParticles();// BABYLON.Tools.GetFps().toFixed() + " FPS";
     scene.render();
   });
 

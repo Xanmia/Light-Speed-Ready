@@ -166,6 +166,7 @@ function BaseEnemy ( opt, lvl ) {
 		background.animations = [];
 		background.material.dispose();
 		background.dispose();
+		//this.enemy.material.dispose();
 		this.enemy.dispose();
 	}
 };
