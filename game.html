@@ -497,7 +497,7 @@
   		  	}
   		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
   		  	{
-  				if(enemies[enemiesCount].enemy.isVisible == true){
+  				if(enemies[enemiesCount].enemy.isVisible == true && player.status == true){
   					player.Damage(enemies[enemiesCount].maxHealth/2);
   				 	enemies[enemiesCount].Damage(player.maxHealth/2);
   				}
