@@ -21,6 +21,7 @@ function ContentLoad(startDisplay)
 	backgroundLoad.src = "images/background.png";
 	backgroundLoad.onload = function () { 		
 				startDisplay.style.display = "block"; 
+				loadingMessage.style.display = "none";
 			};
 	
 	var backmaterial = new BABYLON.StandardMaterial("texture1", scene);

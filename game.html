@@ -18,7 +18,7 @@
 	<div id="TitleScreen">
 		<div class="titlecenter">
 			<img src="images/title.png" width="600" height="300" alt="Title">
-			<div class="mainFontSmall"><div id="gameStart"><button class="mainFont" onclick="StartGame();">--New Game--</button></div>
+			<div class="mainFontSmall"><div class="mainFont" id="loadingMessage">Loading...</div><div id="gameStart"><button class="mainFont" onclick="StartGame();">--New Game--</button></div>
 				<div><br>Developed by <a href="http://twitter.com/xanmia">@Xanmia</a><br>Asteroid models by Seraphz</div>
 		   </div>
 	   </div>
@@ -69,6 +69,8 @@
 	 var LightSpeedMessage = document.getElementById('lightSpeedReady');
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
+	 var loadingMessage = document.getElementById('loadingMessage');
+	 
 	 
 	   
 	ContentLoad(document.getElementById('gameStart'));
