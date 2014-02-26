@@ -17,6 +17,14 @@ function ContentLoad(startDisplay)
     camera.maxZ = 20000;
 
 	time = 0;
+	var backgroundLoad = document.createElement("img");
+	backgroundLoad.src = "images/background.png";
+	backgroundLoad.onload = function () { 		
+				startDisplay.style.display = "block"; 
+			};
+	
+	var backmaterial = new BABYLON.StandardMaterial("texture1", scene);
+	backmaterial.diffuseTexture = new BABYLON.Texture(backgroundLoad.src, scene);
 	
 	particleTexture = new BABYLON.Texture("images/Flare.png", scene);
 	
@@ -27,28 +35,7 @@ function ContentLoad(startDisplay)
 	bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain2", 4,3, scene);
 	bulletobj2.position.x = 15000;
 	bulletobj2.position.z = 15000;
-	
-	bulletpart = new BABYLON.ParticleSystem("bulletPart", 20, scene);
-	bulletpart.particleTexture = particleTexture;//new BABYLON.Texture("images/Flare.png", scene);
-	bulletpart.emitter = bulletobj; 
-    bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
-    bulletpart.maxEmitBox = new BABYLON.Vector3(0, 1, 0); // To...
-	bulletpart.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
-	bulletpart.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
-	bulletpart.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-    bulletpart.direction1 = new BABYLON.Vector3(-2, -1, -2);
-    bulletpart.direction2 = new BABYLON.Vector3(2, 1, 2);
-	bulletpart.minLifeTime = .01;
-    bulletpart.maxLifeTime = .1;
-    bulletpart.minSize = 4.0;
-	bulletpart.maxSize = 5.5;
-	bulletpart.emitRate = 250;
-    bulletpart.minEmitPower = 1;
-    bulletpart.maxEmitPower = 2;
-	bulletpart.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-	bulletpart.targetStopDuration = 0;
-	bulletpart.disposeOnStop = false;
-	
+
  	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
  	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
   	rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
@@ -56,14 +43,11 @@ function ContentLoad(startDisplay)
     rockmaterial.diffuseTexture.uScale = .5;
     rockmaterial.diffuseTexture.vScale = .5;
 	
-	var backgroundSystem = new BABYLON.Mesh.CreatePlane("background",2800, scene);
-	var materialSphere1 = new BABYLON.StandardMaterial("texture1", scene);
-	materialSphere1.diffuseTexture = new BABYLON.Texture("images/background.png", scene);
-	backgroundSystem.material = materialSphere1;//new BABYLON.StandardMaterial("backgroundmat", scene);
+	var backgroundSystem = new BABYLON.Mesh.CreatePlane("background",3000, scene);
+	backgroundSystem.material = backmaterial;//new BABYLON.StandardMaterial("backgroundmat", scene);
   	backgroundSystem.rotation.y = Math.PI;
   	backgroundSystem.rotation.x = Math.PI/2;
   	backgroundSystem.rotation.z = Math.PI *1.5;
-	//backgroundSystem.diffuseTexture = new BABYLON.Texture("images/background.png", scene);
 	backgroundSystem.position.y = -700;
 
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
@@ -85,8 +69,7 @@ function ContentLoad(startDisplay)
    				rock2.position.x = 850;
    				rock2.position.z = 850; 
    		  	  	rock2.material = rockmaterial;
-				//backgroundSystem.stop();
-				startDisplay.style.display = "block";
+		
    				//SceneReset();
    			});	
        });
