@@ -1,3 +1,5 @@
+
+
 html, body, canvas {
          width: 100%;
          height: 100%;
@@ -30,27 +32,27 @@ html, body, canvas {
 }
 
 .mainFont{
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Audiowide', cursive;
    font-size:20px;
    font-weight:bold;
    color:#888888;
 }
 .mainFontLarge{
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Audiowide', cursive;
    font-size:100px;
    font-weight:bold;
    color:#888888;
 }
 
 .mainFontSmallMid{
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Audiowide', cursive;
    font-size:15px;
    font-weight:bold;
    color:#888888;
 }
 
 .mainFontSmall{
-	font-family: 'Montserrat', sans-serif;
+	font-family: 'Audiowide', cursive;
    font-size:12px;
    font-weight:bold;
    color:#888888;
@@ -137,7 +139,7 @@ html, body, canvas {
 	position:fixed;
 	top:48px; 
 	left:50%;
-	margin-left:-85px;
+	margin-left:-65px;
 	padding:1px;
    text-align:center;
    display: none;
@@ -146,7 +148,7 @@ html, body, canvas {
 	position:fixed;
 	top:100px; 
 	left:50%;
-	margin-left:-175px;
+	margin-left:-190px;
 	padding:1px;
    text-align:center;
 }
@@ -154,7 +156,7 @@ html, body, canvas {
 	position:fixed;
 	top:100px; 
 	left:50%;
-	margin-left:-475px;
+	margin-left:-500px;
 	padding:1px;
    text-align:center;
    opacity:.0;
@@ -176,24 +178,24 @@ html, body, canvas {
 .largeGauge{
     width:600px;
     height:30px;
-    	padding:5px;
+    padding:5px;
     opacity:0.5;
-  border:2px solid #888888;
-  border-radius:5px;
+  	border:2px solid #888888;
+ 	border-radius:5px;
 }
 
 .statusScreen{
     width:800px;
     height:600px;
-    	padding:5px;
-    opacity:0.8;
-  border:2px solid #888888;
-  border-radius:5px;
+    padding:5px;
+  	opacity:0.8;
+  	border:2px solid #888888;
+  	border-radius:5px;
 	color:#ffffff;
-   background-color: #000000;
-  margin-left:-400px;
-margin-top:-300px;
-  display:none;
+   	background-color: #000000;
+  	margin-left:-400px;
+	margin-top:-300px;
+  	display:none;
 }
 
 #boxes{
@@ -208,7 +210,7 @@ margin-top:-300px;
   display: inline-block;
   margin: 0 3px;
   overflow: hidden;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Audiowide', cursive;
   font-size: 100%;
   font-weight: 200;
   text-align: center;
