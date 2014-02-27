@@ -20,10 +20,7 @@ function ContentLoad(startDisplay)
 	time = 0;
 	var backgroundLoad = document.createElement("img");
 	backgroundLoad.src = "images/starb.png";
-	backgroundLoad.onload = function () { 		
-				startDisplay.style.display = "block"; 
-				loadingMessage.style.display = "none";
-			};
+
 	
 	var backmaterial = new BABYLON.StandardMaterial("texture1", scene);
 	backmaterial.diffuseTexture = new BABYLON.Texture(backgroundLoad.src, scene);
@@ -71,7 +68,10 @@ function ContentLoad(startDisplay)
    				rock2.position.x = 850;
    				rock2.position.z = 850; 
    		  	  	rock2.material = rockmaterial;
-		
+				backgroundLoad.onload = function () { 		
+							startDisplay.style.display = "block"; 
+							loadingMessage.style.display = "none";
+						};
    				//SceneReset();
    			});	
        });
