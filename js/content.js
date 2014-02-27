@@ -4,6 +4,7 @@ function ContentLoad(startDisplay)
     if (!BABYLON.Engine.isSupported()) {
 		startDisplay.innerHTML = "<div class='alert'>Sorry, your browser exudes awesomeness.<br> Just not awesome enough to play this game.<br>  Why don't you try IE 11, Firefox or Google Chrome instead.</div>";
 		startDisplay.style.display = "block";
+		loadingMessage.style.display = "none";
 	}
 	if(engine != null){engine.dispose()}
 	if(scene != null){scene.dispose();}
