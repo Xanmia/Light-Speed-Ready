@@ -68,14 +68,14 @@ function ContentLoad(startDisplay)
    				rock2.position.x = 850;
    				rock2.position.z = 850; 
    		  	  	rock2.material = rockmaterial;
-				backgroundLoad.onload = function () { 		
-							startDisplay.style.display = "block"; 
-							loadingMessage.style.display = "none";
-						};
+
    				//SceneReset();
    			});	
        });
  	});
-
+	backgroundLoad.onload = function () { 		
+				startDisplay.style.display = "block"; 
+				loadingMessage.style.display = "none";
+			};
 	
 }
