@@ -114,7 +114,7 @@ html, body, canvas {
 }
 
 #deadScreen{
-     margin-left:-300px;
+     margin-left:-345px;
 	margin-top:-100px;
 	color:red;
     display:none;
