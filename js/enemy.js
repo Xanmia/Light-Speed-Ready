@@ -26,7 +26,7 @@ function BaseEnemy ( opt, lvl ) {
 		//var background = xpmessage.clone("xpmessage");
    var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
   	background.material.diffuseTexture = backgroundTexture;
-  	backgroundTexture.drawText("+"+this.value, null, 350, "bold 325px Segoe UI", "white", "#555555");
+  	backgroundTexture.drawText("+"+this.value, null, 350, "bold 285px Segoe UI", "white", "#555555");
 	
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
 	
