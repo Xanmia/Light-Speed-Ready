@@ -19,7 +19,7 @@ function ContentLoad(startDisplay)
 
 	time = 0;
 	var backgroundLoad = document.createElement("img");
-	backgroundLoad.src = "images/background.png";
+	backgroundLoad.src = "images/starb.png";
 	backgroundLoad.onload = function () { 		
 				startDisplay.style.display = "block"; 
 				loadingMessage.style.display = "none";
