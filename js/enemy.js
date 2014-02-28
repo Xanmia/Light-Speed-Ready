@@ -28,6 +28,8 @@ function BaseEnemy ( opt, lvl ) {
   	background.material.diffuseTexture = backgroundTexture;
   	backgroundTexture.drawText("+"+this.value, null, 350, "bold 285px Arial", "white", "#555555");
 	
+
+	
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
 	
 	enemyexplosion.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
@@ -69,8 +71,9 @@ function BaseEnemy ( opt, lvl ) {
 			this.level = level;
 			
 		}
-			
-		  	this.maxHealth = (this.baseHealth + (this.level*this.healthIncrease));
+
+		  	
+			this.maxHealth = (this.baseHealth + (this.level*this.healthIncrease));
 		    this.health = (this.baseHealth + (this.level*this.healthIncrease));
 		    
 			this.enemy.setEnabled(true);
@@ -81,7 +84,17 @@ function BaseEnemy ( opt, lvl ) {
 	this.explode = function()
 	{
 		if (this.enemy._isEnabled == true){
+
 					 GameSound.play("explode");
+				     var spriteManager = new BABYLON.SpriteManager("playerManagr", "images/ExplosionAnimationClear2.png", 1, 150, scene);
+				     var fire = new BABYLON.Sprite("player", spriteManager);
+					 fire.disposeWhenFinishedAnimating = true;
+				     fire.size = 75;
+		 	     	fire.position.z = this.enemy.position.z;
+		 		 	fire.position.x = this.enemy.position.x;
+					fire.position.y = 1;
+					fire.playAnimation(0, 10, false, 70);
+					
 			player.addResources(this.value);
 			this.enemy.animations = [];
 			this.enemy.setEnabled(false);
@@ -91,7 +104,7 @@ function BaseEnemy ( opt, lvl ) {
 
 			enemyexplosion.start();
 			
-      var animationBox3 = new BABYLON.Animation("xpmessage1", "material.alpha", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      var animationBox3 = new BABYLON.Animation("xpmessage1", "material.alpha", 40, BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                                                                       BABYLON.Animation.ANIMATIONLOOPMODE_LOOP);
       var keys = [];
 

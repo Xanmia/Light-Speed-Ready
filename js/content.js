@@ -1,4 +1,4 @@
-
+var mine;
 function ContentLoad(startDisplay)
 {
     if (!BABYLON.Engine.isSupported()) {
@@ -42,6 +42,13 @@ function ContentLoad(startDisplay)
     rockmaterial.diffuseTexture.uScale = .5;
     rockmaterial.diffuseTexture.vScale = .5;
 	
+ 	var minematerial = new BABYLON.StandardMaterial("rockmaterial", scene);
+ 	minematerial.diffuseTexture = new BABYLON.Texture("images/bunker_galvanized.jpg", scene);
+  	minematerial.bumpTexture = new BABYLON.Texture("images/mine.png", scene);
+  	//minematerial.specularColor = new BABYLON.Color3(0, 0, 0);		
+    minematerial.diffuseTexture.uScale = .5;
+    minematerial.diffuseTexture.vScale = .5;
+	
 	var backgroundSystem = new BABYLON.Mesh.CreatePlane("background",3000, scene);
 	backgroundSystem.material = backmaterial;//new BABYLON.StandardMaterial("backgroundmat", scene);
   	backgroundSystem.rotation.y = Math.PI;
@@ -68,7 +75,13 @@ function ContentLoad(startDisplay)
    				rock2.position.x = 850;
    				rock2.position.z = 850; 
    		  	  	rock2.material = rockmaterial;
-
+				
+	   	        BABYLON.SceneLoader.ImportMesh("", "", "assets/mine1-2.babylon", scene, function (newMeshes, particleSystems) {
+	   	        	mine =  newMeshes[0];
+	   				mine.position.x = 850;
+	   				mine.position.z = 850; 
+	   		  	  	mine.material = minematerial;
+				});
    				//SceneReset();
    			});	
        });
