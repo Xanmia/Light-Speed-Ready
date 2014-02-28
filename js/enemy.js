@@ -161,6 +161,7 @@ function BaseEnemy ( opt, lvl ) {
 		 GameSound.play("hit");
 		 
 		this.health -= intDamage;
+		/*
         var sun = new BABYLON.ParticleSystem("particles", 3, scene);
     sun.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
     sun.emitter = this.enemy; // the starting object, the emitter
@@ -181,7 +182,7 @@ function BaseEnemy ( opt, lvl ) {
     sun.updateSpeed = 0.005;
     sun.disposeOnStop = false;
     sun.start();
-	
+	*/
 	 	if(this.health <= 0){
 		 	this.explode();
 	 	} 

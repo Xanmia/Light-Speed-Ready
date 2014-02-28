@@ -43,7 +43,7 @@ var enemiesDEF = [
     	  this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
 	}
 },
-{ // 1 - follower	
+{ // 1 - follower mine
 	baseHealth: 25,
 	healthIncrease: 20,
 	speed: .75,
@@ -125,6 +125,24 @@ var enemiesDEF = [
 		
     	this.enemy.position.x += Math.cos( direction ) * (this.speed*adjmovement);
     	this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
+	}
+},
+{ // 3-meteor storm	
+	baseHealth: 50,
+	healthIncrease: 30,
+	speed: 2,
+	reSpawn: true,
+	value: 5,
+	size: 15,
+	init: function(){
+
+	},
+	setup: function() {
+
+
+	},
+	behavior: function() {
+
 	}
 }
 
