@@ -26,7 +26,7 @@ function BaseEnemy ( opt, lvl ) {
 		//var background = xpmessage.clone("xpmessage");
    var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
   	background.material.diffuseTexture = backgroundTexture;
-  	backgroundTexture.drawText("+"+this.value, null, 350, "bold 285px Segoe UI", "white", "#555555");
+  	backgroundTexture.drawText("+"+this.value, null, 350, "bold 285px Arial", "white", "#555555");
 	
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
 	
@@ -81,6 +81,7 @@ function BaseEnemy ( opt, lvl ) {
 	this.explode = function()
 	{
 		if (this.enemy._isEnabled == true){
+					 GameSound.play("explode");
 			player.addResources(this.value);
 			this.enemy.animations = [];
 			this.enemy.setEnabled(false);
@@ -144,6 +145,7 @@ function BaseEnemy ( opt, lvl ) {
    
 	this.Damage = function(intDamage)
 	{
+		 GameSound.play("hit");
 		this.health -= intDamage;
 	 	if(this.health <= 0){
 		 	this.explode();

@@ -44,6 +44,7 @@
 <script src="js/levelingDefs.js" type="text/javascript" ></script>
 <script src="js/content.js" type="text/javascript" ></script>
 <script src="js/utils.js" type="text/javascript"></script>
+<script src="js/sound.js" type="text/javascript"></script>
 
        <script type="text/javascript">
     var loaded = false;
@@ -70,8 +71,7 @@
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
 	 var loadingMessage = document.getElementById('loadingMessage');
-	 
-	 
+	
 	   
 	ContentLoad(document.getElementById('gameStart'));
 
@@ -154,6 +154,7 @@
 	 
 	  this.levelUp = function(){
 		  this.shipLevel += 1;
+		   GameSound.play("levelup");
 		  LevelNumberView.innerHTML = "LEVEL " + this.shipLevel;
 		  LevelUpMessage.style.opacity = 1;
 		  
@@ -189,6 +190,7 @@
 	this.explode = function(){
 		this.status= false;
 			if (this.Graphic._isEnabled == true){
+		 	   GameSound.play("playerexplode");
 				var totalB = this.bullet.length;
 				while(totalB--){
 					this.bullet[totalB].graphic.dispose();
@@ -231,6 +233,7 @@
 		{
 				/////TODO: damage animation
 			if(this.status == true){
+				 GameSound.play("playerhit");
 				this.health -= intDamage;
 				HealthGauge.style.width = ((this.health / this.maxHealth)*100) + "%"; 
 			}
@@ -278,7 +281,7 @@
 		        });
 		        cameramovein.setKeys(Camerakeys);
 		    	camera.animations.push(cameramovein);
-		
+		        GameSound.play("LSstart");
 			 	this.Graphic.rotation.x = Math.PI + (Math.PI/2); 
 		     	this.Graphic.rotation.y = (Math.PI/2); 
 				scene.beginAnimation(camera, 0, 100, false, 0, function(){
@@ -299,7 +302,7 @@
 			        });
 			        shiplightspeedMove.setKeys(shipkeys);
 			    	player.Graphic.animations.push(shiplightspeedMove);
-
+                    GameSound.play("LSgo");
 					scene.beginAnimation(player.Graphic, 0, 100, false, 0, function(){
 						level +=1;
 						SceneReset();
@@ -318,6 +321,7 @@
 		    	this.LightSpeedGauge += 5;//amount;
 				resAmount -= amount;
 				if (this.LightSpeedGauge >= this.LightSpeedGaugeCapacity){
+					GameSound.play("lightspeedready");
 					LightSpeedMessage.style.opacity = 1;
 					lightSpeedReminder.style.display = "block";
 				}

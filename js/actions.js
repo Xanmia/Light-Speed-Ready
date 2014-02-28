@@ -70,11 +70,13 @@ var actionsDEF = [
 				newbullet2.position.x = player.Graphic.position.x-5;
 				newbullet2.position.z = player.Graphic.position.z-5;
 			}
+ 		   GameSound.play("shoot");
 			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': null});
 			var newbullet3 = bulletobj2.clone("bullet");
 			//var bulletpart3 = bulletpart.clone("bulletpart");
 			//bulletpart3.emitter = newbullet3; 
 			//		bulletpart3.start();
+			
 			if(player.currentDirection!='left'&&player.currentDirection!='right'&&player.currentDirection!='up'&&player.currentDirection!='down'){
 				newbullet3.position.x = player.Graphic.position.x;
 				newbullet3.position.z = player.Graphic.position.z+5;
@@ -83,7 +85,7 @@ var actionsDEF = [
 				newbullet3.position.x = player.Graphic.position.x+5;
 				newbullet3.position.z = player.Graphic.position.z+5;	
 			}
-
+			GameSound.play("shoot");
 			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': null});
 	   		this.lastupdate = time;
 	    }

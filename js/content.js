@@ -73,6 +73,7 @@ function ContentLoad(startDisplay)
    			});	
        });
  	});
+ 
 	backgroundLoad.onload = function () { 		
 				startDisplay.style.display = "block"; 
 				loadingMessage.style.display = "none";
