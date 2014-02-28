@@ -146,7 +146,29 @@ function BaseEnemy ( opt, lvl ) {
 	this.Damage = function(intDamage)
 	{
 		 GameSound.play("hit");
+		 
 		this.health -= intDamage;
+        var sun = new BABYLON.ParticleSystem("particles", 3, scene);
+    sun.particleTexture = new BABYLON.Texture("images/Flare.png", scene);
+    sun.emitter = this.enemy; // the starting object, the emitter
+    sun.minEmitBox = new BABYLON.Vector3(0, 0, 0); // Starting all From-z
+    sun.maxEmitBox = new BABYLON.Vector3(0, 0, 0); // To...z
+    sun.color1 = new BABYLON.Color4(0.5, 0.5, .3, 1.0);
+    sun.color2 = new BABYLON.Color4(0.5, 0.5, .3, 1.0);
+    sun.colorDead = new BABYLON.Color4(0.5, 0.5, 0.3, 1.0);
+    sun.minSize = 100.0;
+    sun.maxSize = 100.0;
+    sun.minLifeTime = .015;
+    sun.maxLifeTime = .021;
+    sun.emitRate =50;
+    sun.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    sun.targetStopDuration = .05;
+    sun.minEmitPower = 1;
+    sun.maxEmitPower = 2;
+    sun.updateSpeed = 0.005;
+    sun.disposeOnStop = false;
+    sun.start();
+	
 	 	if(this.health <= 0){
 		 	this.explode();
 	 	} 
