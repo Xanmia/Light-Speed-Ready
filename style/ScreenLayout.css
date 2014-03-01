@@ -198,25 +198,12 @@ html, body, canvas {
   	display:none;
 }
 
-#boxes{
-  height: 60px;
-  text-align: center;
-}
+#pauseScreen{
+    margin-left:-210px;
+margin-top:-100px;
+   display:none;
+color:yellow;
 
-#boxes .box{
-  width: 60px;
-  height: 60px;
-  background: #555;
-  display: inline-block;
-  margin: 0 3px;
-  overflow: hidden;
-  font-family: 'Audiowide', cursive;
-  font-size: 100%;
-  font-weight: 200;
-  text-align: center;
-  line-height: 90px;
-  color: #f0f0f0;
-    opacity:0.5;
 }
 
 h2 { 

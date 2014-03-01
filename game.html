@@ -18,7 +18,7 @@
 	<div id="TitleScreen">
 		<div class="titlecenter">
 			<img src="images/title.png" width="600" height="300" alt="Title">
-			<div class="mainFontSmall"><div class="mainFont" id="loadingMessage">Loading...</div><div id="gameStart"><button class="mainFont" onclick="StartGame();">--New Game--</button></div>
+			<div class="mainFontSmall"><div class="mainFont" id="loadingMessage">Loading...</div><div id="gameStart"><button class="mainFont" onmouseup="StartGame();">--New Game--</button></div>
 				<div><br>Developed by <a href="http://twitter.com/xanmia">@Xanmia</a><br>Asteroid models by Seraphz</div>
 		   </div>
 	   </div>
@@ -30,7 +30,9 @@
 	<div class="mainFontLarge" id="lightSpeedReady"> Light Speed Ready! <div class="mainFont"> Press (R) for the next level </div></div>
 	<div class="topUnderMiddle mainFontLarge" id="LevelUp"> <div id="levelNumber">LEVEL</div> <div class="mainFont"> Congratulations! You Leveled Up! </div><div id="levelUpDetails" class="mainFontSmall"> + Health + Damage</div></div>
 	<div class="bottomMiddle mainFont">Health<div class="largeGauge"><div class="statusGaugeInside" id="healthGauge"></div></div></div>
-	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onclick="StartGame();">--New Game--</button></div></div>
+	<div class="center mainFontLarge" id="deadScreen">You're DEAD<div class="mainFont"><button class="mainFont" onmouseup="StartGame();">--New Game--</button></div></div>
+	<div class="center mainFontLarge" id="pauseScreen">Paused<br><button class="mainFont" onmouseup="PauseGame(false);">--Resume--</button></div>
+	
 	<div class="bottomRight mainFontLarge"><div id="level"></div></div>
           <canvas id="viewport"></canvas>
 		  <a href="https://github.com/Xanmia/Light-Speed-Ready"><img style="position: absolute; top: 0; right: 0; border: 0;  z-index:6;" src="https://github-camo.global.ssl.fastly.net/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
@@ -47,7 +49,7 @@
 <script src="js/sound.js" type="text/javascript"></script>
 
        <script type="text/javascript">
-    var loaded = false;
+    var loaded = false, pause = false;
 	var level = 0, healthIncrease=5;
 	var up, down, left, right;
 	 var adjmovement =1;
@@ -71,7 +73,7 @@
 	 var lightSpeedReminder = document.getElementById('lightSpeedReminder');
 	 var titleScreen = document.getElementById('TitleScreen');
 	 var loadingMessage = document.getElementById('loadingMessage');
-	
+	 var pausedMessage = document.getElementById('pauseScreen');
 	   
 	ContentLoad(document.getElementById('gameStart'));
 
@@ -479,8 +481,9 @@
   	 // StatusText.innerHTML = scene.getActiveParticles();// BABYLON.Tools.GetFps().toFixed() + " FPS";
   	  adjmovement = scene.getAnimationRatio();
 	  
-  	  if( loaded==true){
+  	  if( loaded==true && pause == false ){
   		 player.update();
+
   		  /////////check for collisions/////////////////////
   	  	enemiesCount = enemies.length;
   	  	while(enemiesCount--){
@@ -568,8 +571,24 @@
   	if(event.keyCode == 82){
 	  player.JumpToLightSpeed();
   	}
+	
+	if (event.keyCode == 80){
+		PauseGame(!pause)
+	}
 
   }	
+  window.onblur = function() {
+	  PauseGame(true)
+  };
+  
+  function PauseGame(status)
+  {
+	if(player.status == true){
+		pause = status;
+		if(pause) {pausedMessage.style.display = "block";}
+		else if (!pause){pausedMessage.style.display = "none";}
+	}
+  }
 
        </script>
 </html>
