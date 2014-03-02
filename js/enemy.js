@@ -27,7 +27,6 @@ function BaseEnemy ( opt, lvl ) {
    var backgroundTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
   	background.material.diffuseTexture = backgroundTexture;
   	backgroundTexture.drawText("+"+this.value, null, 350, "bold 285px Arial", "white", "#555555");
-	
 
 	
 	var enemyexplosion = new BABYLON.ParticleSystem("enemyexplosion", 250, scene);
@@ -37,18 +36,22 @@ function BaseEnemy ( opt, lvl ) {
 	enemyexplosion.minEmitBox = new BABYLON.Vector3(-1, 0, -1); // Starting all From
 	enemyexplosion.maxEmitBox = new BABYLON.Vector3(1, 0, 1); // To...
 
-	enemyexplosion.color1 = new BABYLON.Color4(1.0, 0.8, 1.0, 1.0);
-	enemyexplosion.color2 = new BABYLON.Color4(0.8, 0.6, 1.0, 1.0);
-	enemyexplosion.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+	//enemyexplosion.color1 = new BABYLON.Color4(1.0, 0.8, 1.0, 1.0);
+	//enemyexplosion.color2 = new BABYLON.Color4(0.8, 0.6, 1.0, 1.0);
+	//enemyexplosion.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+
+    enemyexplosion.color1 = new BABYLON.Color4(0.7, 0.7, .3, 1.0);
+    enemyexplosion.color2 = new BABYLON.Color4(0.5, 0.5, .3, 1.0);
+    enemyexplosion.colorDead = new BABYLON.Color4(0.5, 0.5, 0.3, 1.0);
 
 	enemyexplosion.minSize = 2.0;
 	enemyexplosion.maxSize = 5.5;
 
-	enemyexplosion.minLifeTime = .25;
-	enemyexplosion.maxLifeTime = .550;
+	enemyexplosion.minLifeTime = .15;
+	enemyexplosion.maxLifeTime = .250;
 
-	enemyexplosion.emitRate = 5000;
-	enemyexplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+	enemyexplosion.emitRate = 1000;
+	enemyexplosion.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
 	enemyexplosion.direction1 = new BABYLON.Vector3(-8, -8, 0);
 	enemyexplosion.direction2 = new BABYLON.Vector3(8, 8, 0);
 	enemyexplosion.minAngularSpeed = 0;

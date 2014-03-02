@@ -1,4 +1,4 @@
-var mine;
+var mine, radar, enemyship;
 function ContentLoad(startDisplay)
 {
     if (!BABYLON.Engine.isSupported()) {
@@ -27,6 +27,27 @@ function ContentLoad(startDisplay)
 	
 	particleTexture = new BABYLON.Texture("images/Flare.png", scene);
 	
+    radar = BABYLON.Mesh.CreateCylinder("12", .1,300, 300,55, scene);
+	radar.position.x = 15000;
+	radar.position.z = 15000;
+  	radar.rotation.x = Math.PI/2;
+  	radar.rotation.z = Math.PI *1.5;
+	var radarmaterial = new BABYLON.StandardMaterial("shieldMaterial",scene);
+	radarmaterial.opacityTexture = new BABYLON.Texture("images/radarcircle.png", scene);
+	//radarmaterial.wireframe = true;
+	
+	//radar.isVisible = false;
+	radar.material = radarmaterial;
+	
+    enemyship = BABYLON.Mesh.CreateCylinder("12", 50,1, 50,15, scene);
+	enemyship.position.x = 15000;
+	enemyship.position.z = 15000;
+  	//enemyship.rotation.y = Math.PI;
+  	enemyship.rotation.x = Math.PI/2;
+  	enemyship.rotation.z = Math.PI *1.5;
+	//enemyship.isVisible = false;
+	//enemyship.material = radarmaterial;
+	
     bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
 	bulletobj.position.y = -500;
 	bulletobj.isVisible =false;
@@ -34,6 +55,26 @@ function ContentLoad(startDisplay)
 	bulletobj2 = BABYLON.Mesh.CreateSphere("bulletmain2", 4,3, scene);
 	bulletobj2.position.x = 15000;
 	bulletobj2.position.z = 15000;
+
+	bulletpart = new BABYLON.ParticleSystem("bulletPart", 10, scene);
+	bulletpart.particleTexture = new BABYLON.Texture("images/laser.png", scene);
+	bulletpart.emitter = bulletobj2; 
+    bulletpart.minEmitBox = new BABYLON.Vector3(0, 1, 0); // Starting all From
+    bulletpart.maxEmitBox = new BABYLON.Vector3(0, 1, 0); // To...
+	//bulletpart.color1 = new BABYLON.Color4(0.4, 0.8, 1.0, 1.0);
+	//bulletpart.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+	//bulletpart.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+    bulletpart.direction1 = new BABYLON.Vector3(-2, -1, -2);
+    bulletpart.direction2 = new BABYLON.Vector3(2, 1, 2);
+	bulletpart.minLifeTime = .01;
+    bulletpart.maxLifeTime = .1;
+	bulletpart.maxSize = 5.5;
+	bulletpart.emitRate = 100;
+    bulletpart.minEmitPower = 10;
+    bulletpart.maxEmitPower = 30;
+	bulletpart.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+	bulletpart.targetStopDuration = 0;
+	bulletpart.disposeOnStop = true;
 
  	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
  	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
