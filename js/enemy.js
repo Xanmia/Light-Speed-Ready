@@ -155,6 +155,10 @@ function BaseEnemy ( opt, lvl ) {
 		if(this.reSpawn==true){
 			this.respawn();
 		}
+		else{
+			this.enemy.position.x = 5000;
+			this.enemy.position.z = 5000;
+		}
   		}
 
 	}

@@ -156,12 +156,12 @@ var enemiesDEF = [
 		this.speed  = (Math.random()*this.speed) + .1;
 	},
 	setup: function() {
-	    var loc = SpawnInside();
+	    var loc = SpawnInsideEdge();
 	  	this.enemy.position.x = loc.x;
 	  	this.enemy.position.z = loc.z;
 	  this.radar.position.x = 0;//this.enemy.position.x;
 	  this.radar.position.z = 0;//this.enemy.position.z;
-  	  loc = SpawnInside();
+  	  loc = SpawnInsideEdge();
   	  this.toX = loc.x;
   	  this.toZ = loc.z;
  		var dx = this.toX - this.enemy.position.x;
@@ -178,7 +178,7 @@ var enemiesDEF = [
 		
 	  }
 	  if((this.enemy.position.x  > height || this.enemy.position.x < -height) || (this.enemy.position.z > width || this.enemy.position.z  < -width)){
-	  	  loc = SpawnInside();
+	  	  loc = SpawnInsideEdge();
 	 		var dx = loc.x - this.enemy.position.x;
 	 		var dy = loc.z - this.enemy.position.z;
 			this.direction = Math.atan2( dy, dx );
@@ -196,6 +196,62 @@ var enemiesDEF = [
 
 		 // this.radar.position.x = this.enemy.position.x;
 		 // this.radar.position.z = this.enemy.position.z;
+	}
+},
+{ // 4 - static mine, close prox will explode
+	baseHealth: 100,
+	healthIncrease: 20,
+	speed: .75,
+	reSpawn: false,
+	value: 5,
+	size: 1,
+	refreshtime:1.0,
+	lastupdate:0,
+	init: function(){
+		this.enemy = mine.clone("test");
+		var actsize = (Math.random()*this.size) + 15; ///min size is 15
+		this.radar = radar.clone("radar");
+	  	this.enemy.scaling.x = actsize;
+	  	this.enemy.scaling.y = actsize;
+	  	this.enemy.scaling.z = actsize;
+		this.radar.parent = this.enemy;
+
+  	  this.radar.position.x = 0;//this.enemy.position.x;
+  	  this.radar.position.z = 0;//this.enemy.position.z;
+		this.radar.scaling.x = .010;
+		this.radar.scaling.y = .010;
+		this.radar.scaling.z = .010;
+	   this.radar.rotation.z += Math.PI*.5; // *1.5;
+
+	},
+	setup: function() {
+	  	  var loc = SpawnInside();
+	  this.enemy.position.x = loc.x;
+	  this.enemy.position.z = loc.z;
+	},
+	behavior: function() {
+
+		 if(this.radar.intersectsMesh(player.BoundingBox,true)){
+
+			  	if((time-this.lastupdate) > this.refreshtime ){
+	   			  this.explode();
+				   player.Damage(this.maxHealth/4);
+				 this.lastupdate = time;
+				}
+
+		 }
+		 else{
+			this.lastupdate = time;
+	 		this.radar.scaling.x += .00015;
+	 		this.radar.scaling.y += .00015;
+	 		this.radar.scaling.z += .00015;
+	 		if(this.radar.scaling.x>=.03){
+	 			this.radar.scaling.x = .01;
+	 			this.radar.scaling.y = .01;
+	 			this.radar.scaling.z = .01;
+	 		}
+		 }
+		 
 	}
 }
 

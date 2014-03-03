@@ -143,6 +143,9 @@ function ContentLoad(startDisplay)
 	   	        	mine =  newMeshes[0];
 	   				mine.position.x = 850;
 	   				mine.position.z = 850; 
+				  	mine.rotation.y = Math.PI;
+				  	mine.rotation.x = Math.PI/2;
+				  	mine.rotation.z = Math.PI *1.5;
 	   		  	  	mine.material = minematerial;
 				});
    				//SceneReset();

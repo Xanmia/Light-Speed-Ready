@@ -23,7 +23,7 @@ function SpawnOutside(){
 	return {'x': x, 'z': z};
 }
 
-function SpawnInside(){
+function SpawnInsideEdge(){
 	var rando = Math.round(Math.random()*1);
 	var x = ((Math.random()*1500)-750);
 	var z = ((Math.random()*1500)-750);
@@ -45,5 +45,10 @@ function SpawnInside(){
 	  	  z=-width+100;
   	   }	
 	}
+	return {'x': x, 'z': z};
+}
+function SpawnInside(){
+	var x = ((Math.random()*1500)-750);
+	var z = ((Math.random()*1500)-750);
 	return {'x': x, 'z': z};
 }
