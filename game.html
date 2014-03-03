@@ -52,7 +52,7 @@
     var loaded = false, pause = false;
 	var level = 0, healthIncrease=5;
 	var up, down, left, right;
-	 var adjmovement =1;
+	 var adjmovement =1, fulldirectiontest;
 	 var playingBoardSize = 500;
 	 var height = playingBoardSize+200, width = playingBoardSize +(200 * (window.innerWidth/window.innerHeight));// additional for camera extend - fullsize of board
      var movex=0, movez=0, movey=0, particleSystem, enemies=[], playerGraphic,explosionSystem, engine, camera, time,scene, light0, skybox, skyboxMaterial;
@@ -347,52 +347,38 @@
 	////////////player movement
 			if (up && right){
 				this.Graphic.rotation.y = Math.PI*.75; //up-and-right
-				movez = (this.speed*adjmovement)/1.5; 
-				movex = -(this.speed*adjmovement)/1.5;
 				this.currentDirection = "upright";
 			}
 			else if (up && left){
-				movex = -(this.speed*adjmovement)/1.5;
-				movez = -(this.speed*adjmovement)/1.5;
 				 this.Graphic.rotation.y = Math.PI/4; //up-and-left
 				 this.currentDirection = "upleft";
 			}
 			else if (down && right){
-				movez = (this.speed*adjmovement)/1.5;
-				movex = (this.speed*adjmovement)/1.5;
 				this.Graphic.rotation.y = Math.PI *1.25; //down-and-right
 				 this.currentDirection = "downright";
 			}
 			else if (down && left){
-				movex = (this.speed*adjmovement)/1.5;
-				movez = -(this.speed*adjmovement)/1.5;
 				 this.Graphic.rotation.y = Math.PI*1.75; //down and left
 				  this.currentDirection = "downleft";
 			}
 			else if (up){
-	            player.Graphic.rotation.y = Math.PI/2; 
-	   		 	movex = -(this.speed*adjmovement);// need stat on player object
-	   		 	movez = 0;
+	            this.Graphic.rotation.y = Math.PI/2; 
 				this.currentDirection = "up";
 			}
 			else if (down){
-	            player.Graphic.rotation.y = Math.PI*1.5; 
-	   		 	movex = this.speed*adjmovement;// need stat on player object
-	   		 	movez = 0;
+	            this.Graphic.rotation.y = Math.PI*1.5; 
 				this.currentDirection = "down";
 			}
 			else if (left){
-	            player.Graphic.rotation.y = 0; 
-	   		 	movez = -(this.speed*adjmovement);// need stat on player object
-	   		 	movex = 0;
+	            this.Graphic.rotation.y = 0; 
 				this.currentDirection = "left";
 			}
 			else if (right){
 	            this.Graphic.rotation.y = Math.PI; 
-	   			movez = this.speed*adjmovement; // need stat on player object
-	   		 	movex = 0;
 				this.currentDirection = "right";
 			}
+   			movez = Math.cos( Math.PI + this.Graphic.rotation.y ) * (this.speed*adjmovement);//this.speed*adjmovement; // need stat on player object
+   		 	movex = Math.sin( Math.PI + this.Graphic.rotation.y ) * (this.speed*adjmovement);//0;
 	/////////////////////////
 
 	//////////Bound player inside sky box need width height of window for bounding
@@ -410,7 +396,6 @@
 			 this.Graphic.position.x += movex;
 			 this.BoundingBox.position.x = this.Graphic.position.x;
 			 this.BoundingBox.position.z = this.Graphic.position.z;
-
 	//////////////////////
 	/////////TODO: move outside update/////
 		    lightSpeedGauge.style.width = ((this.LightSpeedGauge / this.LightSpeedGaugeCapacity)*100) + "%";
@@ -424,42 +409,10 @@
 	//////player bullet movement///////	
 			var totalB = this.bullet.length;
 			while(totalB--){
-				if (this.bullet[totalB].direction == "right")
-				{
-					this.bullet[totalB].graphic.position.z += this.speed * adjmovement + this.bulletSpeed * adjmovement;
-				}
-				else if (this.bullet[totalB].direction == "left")
-				{
-					this.bullet[totalB].graphic.position.z += -(this.speed * adjmovement + this.bulletSpeed*adjmovement);
-				}
-				else if (this.bullet[totalB].direction == "up")
-				{
-					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement);
-				}
-				else if (this.bullet[totalB].direction == "down")
-				{
-					this.bullet[totalB].graphic.position.x += this.speed*adjmovement + this.bulletSpeed*adjmovement;
-				}
-				else if (this.bullet[totalB].direction == "upleft")
-				{
-					this.bullet[totalB].graphic.position.z += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-				}
-				else if (this.bullet[totalB].direction == "upright")
-				{
-					this.bullet[totalB].graphic.position.x += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-					this.bullet[totalB].graphic.position.z += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-				}
-				else if (this.bullet[totalB].direction == "downleft")
-				{
-					this.bullet[totalB].graphic.position.z += -(this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-					this.bullet[totalB].graphic.position.x += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-				}
-				else if (this.bullet[totalB].direction == "downright")
-				{
-					this.bullet[totalB].graphic.position.z += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-					this.bullet[totalB].graphic.position.x += (this.speed*adjmovement + this.bulletSpeed*adjmovement)/1.5;
-				}
+			
+		  		this.bullet[totalB].graphic.position.x += Math.sin( Math.PI + this.bullet[totalB].direction ) * ((this.speed*adjmovement)+ (this.bulletSpeed * adjmovement));
+		  		this.bullet[totalB].graphic.position.z += Math.cos( Math.PI + this.bullet[totalB].direction ) * ((this.speed*adjmovement)+ (this.bulletSpeed * adjmovement));
+
 		////////////////////////////////////
 		/////////bullet disposal///////////		
 				if (this.bullet[totalB].graphic.position.z > width+50 || this.bullet[totalB].graphic.position.z < -width-50 || this.bullet[totalB].graphic.position.x > height+50 || this.bullet[totalB].graphic.position.x < -height-50)
@@ -579,6 +532,13 @@
   window.onblur = function() {
 	  PauseGame(true)
   };
+  
+  window.addEventListener("mousemove", function (evt) {
+     var pickResult = scene.pick(evt.clientX, evt.clientY);
+			fulldirectiontest = Math.atan2( pickResult.pickedPoint.x*-1, pickResult.pickedPoint.z*-1 );
+			//fulldirectiontest = Math.atan2( evt.clientX*-1, evt.clientY*-1 );
+	  // player.Graphic.rotation.y =  fulldirectiontest  ;
+  });
   
   function PauseGame(status)
   {

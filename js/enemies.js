@@ -115,11 +115,13 @@ var enemiesDEF = [
 	  this.rotationX =  Math.random() * .02;
 	  this.rotationY =  Math.random() * .02;
 	  this.rotationZ =  Math.random() * .02;
+		var dx = this.toX - this.enemy.position.x;
+		var dy = this.toZ - this.enemy.position.z;
+			this.direction = Math.atan2( dy, dx );
 	},
 	behavior: function() {
 		var dx = this.toX - this.enemy.position.x;
 		var dy = this.toZ - this.enemy.position.z;
-				var direction = Math.atan2( dy, dx );
 				
 		if (dx < 5 && dy < 5){
 			this.setup();
@@ -129,14 +131,14 @@ var enemiesDEF = [
 		this.enemy.rotation.x += this.rotationX*adjmovement;
 		this.enemy.rotation.y += this.rotationY*adjmovement;
 		
-    	this.enemy.position.x += Math.cos( direction ) * (this.speed*adjmovement);
-    	this.enemy.position.z += Math.sin( direction ) * (this.speed*adjmovement);
+    	this.enemy.position.x += Math.cos( this.direction ) * (this.speed*adjmovement);
+    	this.enemy.position.z += Math.sin( this.direction ) * (this.speed*adjmovement);
 	}
 },
 { // 3-enemyship
-	baseHealth: 500,
+	baseHealth: 400,
 	healthIncrease: 30,
-	speed: .75,
+	speed: .7,
 	reSpawn: true,
 	value: 5,
 	size: 15,
@@ -154,38 +156,35 @@ var enemiesDEF = [
 		this.speed  = (Math.random()*this.speed) + .1;
 	},
 	setup: function() {
-	    var loc = SpawnOutside();
+	    var loc = SpawnInside();
 	  	this.enemy.position.x = loc.x;
 	  	this.enemy.position.z = loc.z;
 	  this.radar.position.x = 0;//this.enemy.position.x;
 	  this.radar.position.z = 0;//this.enemy.position.z;
-  	  loc = SpawnOutside();
+  	  loc = SpawnInside();
   	  this.toX = loc.x;
   	  this.toZ = loc.z;
+ 		var dx = this.toX - this.enemy.position.x;
+ 		var dy = this.toZ - this.enemy.position.z;
+		this.direction = Math.atan2( dy, dx );
 	},
 	behavior: function() {
 		////if player found
-		if((time-this.lastupdate) > this.refreshtime ){
+	//	if((time-this.lastupdate) > this.refreshtime ){
 	 if(this.radar.intersectsMesh(player.BoundingBox,true)){
 		var dx = player.Graphic.position.x - this.enemy.position.x;
 		var dy = player.Graphic.position.z - this.enemy.position.z;
 		this.direction = Math.atan2( dy, dx );
 		
 	  }
-	  else{
-	 	 ////////////
-	 	 //////normal behavior 
-	 	var dx = this.toX - this.enemy.position.x;
-	 	var dy = this.toZ - this.enemy.position.z;
-	 			//var direction = Math.atan2( dy, dx );
+	  if((this.enemy.position.x  > height || this.enemy.position.x < -height) || (this.enemy.position.z > width || this.enemy.position.z  < -width)){
+	  	  loc = SpawnInside();
+	 		var dx = loc.x - this.enemy.position.x;
+	 		var dy = loc.z - this.enemy.position.z;
 			this.direction = Math.atan2( dy, dx );
-	 	if (dx < 5 && dy < 5){
-	 		this.setup();
-	 	}
-
 	  }
-	  this.lastupdate = time;
-  }
+//	  this.lastupdate = time;
+ // }
 	  	
   		this.enemy.position.x += Math.cos( this.direction ) * (this.speed*adjmovement);
   		this.enemy.position.z += Math.sin( this.direction ) * (this.speed*adjmovement);

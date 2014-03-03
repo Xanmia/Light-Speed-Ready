@@ -71,7 +71,7 @@ var actionsDEF = [
 				newbullet2.position.z = player.Graphic.position.z-5;
 			}
  		   GameSound.play("shoot");
-			player.bullet.push({'graphic': newbullet2, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': null});
+			player.bullet.push({'graphic': newbullet2, 'direction':player.Graphic.rotation.y, 'damage': player.bulletDamage, 'particle': null});
 			var newbullet3 = bulletobj2.clone("bullet");
 			//var bulletpart3 = bulletpart.clone("bulletpart");
 			//bulletpart3.emitter = newbullet3; 
@@ -86,7 +86,7 @@ var actionsDEF = [
 				newbullet3.position.z = player.Graphic.position.z+5;	
 			}
 			GameSound.play("shoot");
-			player.bullet.push({'graphic': newbullet3, 'direction':player.currentDirection, 'damage': player.bulletDamage, 'particle': null});
+			player.bullet.push({'graphic': newbullet3, 'direction':player.Graphic.rotation.y, 'damage': player.bulletDamage, 'particle': null});
 	   		this.lastupdate = time;
 	    }
 	}

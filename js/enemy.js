@@ -162,7 +162,6 @@ function BaseEnemy ( opt, lvl ) {
 	this.Damage = function(intDamage)
 	{
 		 GameSound.play("hit");
-		 
 		this.health -= intDamage;
 		/*
         var sun = new BABYLON.ParticleSystem("particles", 3, scene);
