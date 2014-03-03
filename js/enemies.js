@@ -140,7 +140,7 @@ var enemiesDEF = [
 	healthIncrease: 30,
 	speed: .7,
 	reSpawn: true,
-	value: 5,
+	value: 15,
 	size: 15,
 	refreshtime:.30,
 	lastupdate:0,

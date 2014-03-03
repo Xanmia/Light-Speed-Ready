@@ -39,7 +39,7 @@ function ContentLoad(startDisplay)
 	//radar.isVisible = false;
 	radar.material = radarmaterial;
 	
-    enemyship = BABYLON.Mesh.CreateCylinder("12", 50,1, 50,15, scene);
+    enemyship = BABYLON.Mesh.CreateCylinder("12", 50,1, 50,25, scene);
 	enemyship.position.x = 15000;
 	enemyship.position.z = 15000;
   	//enemyship.rotation.y = Math.PI;
@@ -47,6 +47,28 @@ function ContentLoad(startDisplay)
   	enemyship.rotation.z = Math.PI *1.5;
 	//enemyship.isVisible = false;
 	//enemyship.material = radarmaterial;
+ 	var enemyShipmaterial = new BABYLON.StandardMaterial("enemymaterial", scene);
+ 	enemyShipmaterial.diffuseTexture = new BABYLON.Texture("images/micro.png", scene);
+  	enemyShipmaterial.bumpTexture = new BABYLON.Texture("images/grate0_normal.png", scene);
+  	//minematerial.specularColor = new BABYLON.Color3(0, 0, 0);		
+   // enemyShipmaterial.diffuseTexture.uScale = .5;
+   // enemyShipmaterial.diffuseTexture.vScale = .5;
+	enemyship.material = enemyShipmaterial;
+	/*
+    enemyship = new BABYLON.Mesh.CreatePlane("enemy",50, scene);
+	enemyship.position.x = 15000;
+	enemyship.position.z = 15000;
+
+  	//enemyship.rotation.y = Math.PI;
+  	enemyship.rotation.x = Math.PI/2;
+  	enemyship.rotation.z = Math.PI *1.5;
+
+ 	var enemyShipmaterial = new BABYLON.StandardMaterial("enemymaterial", scene);
+		enemyShipmaterial.diffuseTexture = new BABYLON.Texture("images/blue2.png", scene);
+ //	enemyShipmaterial.opacityTexture = new BABYLON.Texture("images/blue2.png", scene);
+  //	enemyShipmaterial.bumpTexture = new BABYLON.Texture("images/blue2normalmap.png", scene);
+	enemyship.material = enemyShipmaterial;
+	*/
 	
     bulletobj = BABYLON.Mesh.CreateSphere("bulletmain", 1,1, scene);
 	bulletobj.position.y = -500;
@@ -98,7 +120,7 @@ function ContentLoad(startDisplay)
 	backgroundSystem.position.y = -700;
 
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
-  scene.activeCamera.attachControl(canvas);
+ // scene.activeCamera.attachControl(canvas);
     BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
        newMeshes[0].scaling.x = .015;
        newMeshes[0].scaling.y = .015;
