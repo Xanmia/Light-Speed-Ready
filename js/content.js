@@ -42,7 +42,7 @@ function ContentLoad(startDisplay)
 	
 
  	var enemyShipmaterial = new BABYLON.StandardMaterial("enemymaterial", scene);
- 	enemyShipmaterial.diffuseTexture = new BABYLON.Texture("images/micro.png", scene);
+ 	enemyShipmaterial.diffuseTexture = new BABYLON.Texture("images/Micro.png", scene);
   	enemyShipmaterial.bumpTexture = new BABYLON.Texture("images/grate0_normal.png", scene);
 	
 	
