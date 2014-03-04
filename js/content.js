@@ -138,7 +138,7 @@ function ContentLoad(startDisplay)
 	backgroundSystem.position.y = -700;
 
    light0 = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(0, 0, -10), scene);
-  scene.activeCamera.attachControl(canvas);
+ // scene.activeCamera.attachControl(canvas);
     BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes, particleSystems) {
        newMeshes[0].scaling.x = .015;
        newMeshes[0].scaling.y = .015;
