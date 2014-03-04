@@ -142,17 +142,18 @@ var enemiesDEF = [
 	reSpawn: true,
 	value: 15,
 	size: 15,
-	refreshtime:.30,
+	refreshtime:1.0,
 	lastupdate:0,
+	damage:5,
 	init: function(){
+		this.enemyBullet = [];
 		this.enemy = enemyship.clone("test");
 		this.radar = radar.clone("radar");
-
 		this.radar.parent = this.enemy;
-	  	//this.radar.rotation.x += Math.PI;
-	  	this.radar.rotation.z += Math.PI *1.5;
-	  	//this.radar.rotation.y += Math.PI*2;
-	  	//this.radar.rotation.z += Math.PI *2.5;
+		
+	  	this.radar.rotation.x += Math.PI/2;
+	  	this.radar.rotation.z += Math.PI *.5;
+
 		this.speed  = (Math.random()*this.speed) + .1;
 	},
 	setup: function() {
@@ -169,13 +170,21 @@ var enemiesDEF = [
 		this.direction = Math.atan2( dy, dx );
 	},
 	behavior: function() {
-		////if player found
-	//	if((time-this.lastupdate) > this.refreshtime ){
+
 	 if(this.radar.intersectsMesh(player.BoundingBox,true)){
 		var dx = player.Graphic.position.x - this.enemy.position.x;
 		var dy = player.Graphic.position.z - this.enemy.position.z;
 		this.direction = Math.atan2( dy, dx );
-		
+	    if((time-this.lastupdate) > this.refreshtime)
+	    {			
+			var newbullet2 = bulletobj3.clone("bullet");
+			newbullet2.position.x = this.enemy.position.x;
+			newbullet2.position.z = this.enemy.position.z;
+			this.enemyBullet.push({'graphic': newbullet2, 'direction':this.direction});
+
+			this.lastupdate = time;
+		}
+
 	  }
 	  if((this.enemy.position.x  > height || this.enemy.position.x < -height) || (this.enemy.position.z > width || this.enemy.position.z  < -width)){
 	  	  loc = SpawnInsideEdge();
@@ -183,19 +192,27 @@ var enemiesDEF = [
 	 		var dy = loc.z - this.enemy.position.z;
 			this.direction = Math.atan2( dy, dx );
 	  }
-//	  this.lastupdate = time;
- // }
-	  	
+	  
+	var totalB = this.enemyBullet.length;
+	while(totalB--){
+	
+  		this.enemyBullet[totalB].graphic.position.x += Math.cos(  this.enemyBullet[totalB].direction ) * ((this.speed*adjmovement)+ (2 * adjmovement));
+  		this.enemyBullet[totalB].graphic.position.z += Math.sin(  this.enemyBullet[totalB].direction ) * ((this.speed*adjmovement)+ (2 * adjmovement));
+		if(this.enemyBullet[totalB].graphic.intersectsMesh(player.BoundingBox,true)){
+			player.Damage(this.damage);
+			this.enemyBullet[totalB].graphic.dispose();
+			this.enemyBullet.splice(totalB, 1);
+		}
+		else if (this.enemyBullet[totalB].graphic.position.z > width+50 || this.enemyBullet[totalB].graphic.position.z < -width-50 || this.enemyBullet[totalB].graphic.position.x > height+50 || this.enemyBullet[totalB].graphic.position.x < -height-50)
+		{
+			this.enemyBullet[totalB].graphic.dispose();
+			this.enemyBullet.splice(totalB, 1);
+		}
+  	  }
+	  
   		this.enemy.position.x += Math.cos( this.direction ) * (this.speed*adjmovement);
   		this.enemy.position.z += Math.sin( this.direction ) * (this.speed*adjmovement);
 	    this.enemy.rotation.y = Math.PI - this.direction ;
-    //	enemyship.rotation.y = Math.PI;
-	//this.enemy.rotation.y = Math.sin( direction );
-    	//this.enemy.rotation.y = Math.cos( direction );// Math.PI/2;
-    	//this.enemy.rotation.x = direction; // Math.cos( direction ); //Math.PI *1.5;
-
-		 // this.radar.position.x = this.enemy.position.x;
-		 // this.radar.position.z = this.enemy.position.z;
 	}
 },
 { // 4 - static mine, close prox will explode
@@ -218,9 +235,9 @@ var enemiesDEF = [
 
   	  this.radar.position.x = 0;//this.enemy.position.x;
   	  this.radar.position.z = 0;//this.enemy.position.z;
-		this.radar.scaling.x = .010;
-		this.radar.scaling.y = .010;
-		this.radar.scaling.z = .010;
+		this.radar.scaling.x = .0010;
+		this.radar.scaling.y = .0010;
+		this.radar.scaling.z = .0010;
 	   this.radar.rotation.z += Math.PI*.5; // *1.5;
 
 	},
@@ -246,9 +263,9 @@ var enemiesDEF = [
 	 		this.radar.scaling.y += .00015;
 	 		this.radar.scaling.z += .00015;
 	 		if(this.radar.scaling.x>=.03){
-	 			this.radar.scaling.x = .01;
-	 			this.radar.scaling.y = .01;
-	 			this.radar.scaling.z = .01;
+	 			this.radar.scaling.x = .001;
+	 			this.radar.scaling.y = .001;
+	 			this.radar.scaling.z = .001;
 	 		}
 		 }
 		 

@@ -6,6 +6,7 @@ function BaseEnemy ( opt, lvl ) {
 	
 	this.setup = this.setup || function(){};
 	this.death = this.death || function(){};
+	this.damage = this.damage || 0;
 	
 	this.level = lvl;
 	this.value += this.level;
@@ -78,7 +79,7 @@ function BaseEnemy ( opt, lvl ) {
 		  	
 			this.maxHealth = (this.baseHealth + (this.level*this.healthIncrease));
 		    this.health = (this.baseHealth + (this.level*this.healthIncrease));
-		    
+		    this.damage = this.damage + this.level;
 			this.enemy.setEnabled(true);
 	    	this.enemy.isVisible = true;
 			this.setup();
