@@ -7,6 +7,7 @@ function BaseEnemy ( opt, lvl ) {
 	this.setup = this.setup || function(){};
 	this.death = this.death || function(){};
 	this.damage = this.damage || 0;
+	this.enemyBullet = this.enemyBullet || [];
 	
 	this.level = lvl;
 	this.value += this.level;
@@ -211,7 +212,11 @@ function BaseEnemy ( opt, lvl ) {
 		background.animations = [];
 		background.material.dispose();
 		background.dispose();
-		//this.enemy.material.dispose();
+		var totalB = this.enemyBullet.length;
+		while(totalB--){
+			this.enemyBullet[totalB].graphic.dispose();
+			this.enemyBullet.splice(totalB, 1);
+	  	  }
 		this.enemy.dispose();
 	}
 };

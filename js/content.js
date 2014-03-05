@@ -118,14 +118,14 @@ function ContentLoad(startDisplay)
 
  	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
  	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
-  	rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
+  	rockmaterial.bumpTexture = new BABYLON.Texture("images/rocknormal.jpg", scene);
   	rockmaterial.specularColor = new BABYLON.Color3(0, 0, 0);		
     rockmaterial.diffuseTexture.uScale = .5;
     rockmaterial.diffuseTexture.vScale = .5;
 	
  	var minematerial = new BABYLON.StandardMaterial("rockmaterial", scene);
  	minematerial.diffuseTexture = new BABYLON.Texture("images/bunker_galvanized.jpg", scene);
-  	minematerial.bumpTexture = new BABYLON.Texture("images/mine.png", scene);
+  	minematerial.bumpTexture = new BABYLON.Texture("images/concrete01_norm.jpg", scene);
   	//minematerial.specularColor = new BABYLON.Color3(0, 0, 0);		
     minematerial.diffuseTexture.uScale = .5;
     minematerial.diffuseTexture.vScale = .5;

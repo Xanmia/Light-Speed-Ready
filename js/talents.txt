@@ -1,0 +1,23 @@
+Dark
+damage +1-5%
+accuracy +1-5%
+Speed +1-5%
+Missle +1
+Increase missle frequency +5%
+death droid + 1
+Mines +1
+Increase mine frequency +5%
+Nuke +1
+Cheat Death 1%
+
+
+Light
+Health +1-+5%
+accuracy +1-5%
+Speed +1-5%
+health droid +1
+Thrust +1
+Thrust recharge +1-5%
+Shield +1
+Shield recharge +1-5%
+Health Regen 5%
