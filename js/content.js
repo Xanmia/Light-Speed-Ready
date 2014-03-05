@@ -118,7 +118,7 @@ function ContentLoad(startDisplay)
 
  	var rockmaterial = new BABYLON.StandardMaterial("rockmaterial", scene);
  	rockmaterial.diffuseTexture = new BABYLON.Texture("images/marble.jpg", scene);
-  	rockmaterial.bumpTexture = new BABYLON.Texture("images/rocknormal.jpg", scene);
+  	rockmaterial.bumpTexture = new BABYLON.Texture("images/Rocknormal.jpg", scene);
   	rockmaterial.specularColor = new BABYLON.Color3(0, 0, 0);		
     rockmaterial.diffuseTexture.uScale = .5;
     rockmaterial.diffuseTexture.vScale = .5;
