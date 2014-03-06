@@ -1,4 +1,4 @@
-var mine, radar, enemyship, bulletobj3;
+var mine, radar, enemyship, bulletobj3, contentloaded=false;
 function ContentLoad(startDisplay)
 {
     if (!BABYLON.Engine.isSupported()) {
@@ -168,15 +168,23 @@ function ContentLoad(startDisplay)
 				  	mine.rotation.x = Math.PI/2;
 				  	mine.rotation.z = Math.PI *1.5;
 	   		  	  	mine.material = minematerial;
-					
-					startDisplay.style.display = "block"; 
-					loadingMessage.style.display = "none";
+					if(contentloaded==true){
+						startDisplay.style.display = "block"; 
+						loadingMessage.style.display = "none";
+					}
+					contentloaded = true;
 				});
    				//SceneReset();
    			});	
        });
  	});
- 
+	backgroundLoad.onload = function () { 		
+			if(contentloaded==true){
+				startDisplay.style.display = "block"; 
+				loadingMessage.style.display = "none";
+			}
+			contentloaded = true;
+			};
 
 	
 }
