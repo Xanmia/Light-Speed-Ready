@@ -441,10 +441,12 @@
   	  	while(enemiesCount--){
   			enemies[enemiesCount].update();
 			if(player.status == true){
+			enemyChildren = enemies[enemiesCount].enemy.getChildren();
   			bulletCount = player.bullet.length;
   		  	while(bulletCount--){
+			 if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
   				if(enemies[enemiesCount].enemy.intersectsMesh(player.bullet[bulletCount].graphic,true)){
-  				  if(enemies[enemiesCount].enemy.isVisible==true && player.bullet[bulletCount].graphic.isVisible==true){
+
   				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
   					//player.bullet[bulletCount].particle.stop();
 					//player.bullet[bulletCount].particle.dispose();
@@ -452,6 +454,17 @@
   					player.bullet[bulletCount].graphic.dispose();
   					player.bullet.splice(bulletCount, 1);
   				  }
+				  /*
+				  if(enemyChildren.length > 0)
+				  {
+	    				if(enemyChildren[0].intersectsMesh(player.bullet[bulletCount].graphic,true) || enemyChildren[1].intersectsMesh(player.bullet[bulletCount].graphic,true) ){
+	    				  	enemies[enemiesCount].Damage(player.bullet[bulletCount].damage)
+	    					player.bullet[bulletCount].graphic.isVisible = false; 
+	    					player.bullet[bulletCount].graphic.dispose();
+	    					player.bullet.splice(bulletCount, 1);
+	    				  }
+				  }
+				  */
   			  	}
   		  	}
   		  	if(player.BoundingBox.intersectsMesh(enemies[enemiesCount].enemy,true)==true)
@@ -535,7 +548,7 @@
   
   window.addEventListener("mousemove", function (evt) {
      var pickResult = scene.pick(evt.clientX, evt.clientY);
-			fulldirectiontest = Math.atan2( pickResult.pickedPoint.x*-1, pickResult.pickedPoint.z*-1 );
+			//fulldirectiontest = Math.atan2( pickResult.pickedPoint.x*-1, pickResult.pickedPoint.z*-1 );
 			//fulldirectiontest = Math.atan2( evt.clientX*-1, evt.clientY*-1 );
 	  // player.Graphic.rotation.y =  fulldirectiontest  ;
   });

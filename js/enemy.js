@@ -1,8 +1,9 @@
 
-function BaseEnemy ( opt, lvl ) {
+function BaseEnemy ( opt, lvl, optEnemy ) {
 	for( var k in opt ) {
 		this[k] = opt[k];
 	}
+	
 	
 	this.setup = this.setup || function(){};
 	this.death = this.death || function(){};
@@ -14,6 +15,7 @@ function BaseEnemy ( opt, lvl ) {
 	this.health = this.baseHealth + (this.level*this.healthIncrease);
 	this.maxHealth = this.baseHealth + (this.level*this.healthIncrease);
 		this.init();
+	this.enemy = this.enemy || optEnemy;
 	
   	var background = BABYLON.Mesh.CreatePlane("COUNT", 20, scene);
 	//background.isVisible = false;
@@ -103,7 +105,7 @@ function BaseEnemy ( opt, lvl ) {
 			player.addResources(this.value);
 			this.enemy.animations = [];
 			this.enemy.setEnabled(false);
-		
+		this.enemy.isVisible = false;
 		    background.position.x = this.enemy.position.x;
 		    background.position.z = this.enemy.position.z;
 
@@ -158,8 +160,8 @@ function BaseEnemy ( opt, lvl ) {
 			this.respawn();
 		}
 		else{
-			this.enemy.position.x = 5000;
-			this.enemy.position.z = 5000;
+			this.enemy.position.x = 2000;
+			this.enemy.position.z = 2000;
 		}
   		}
 
@@ -220,6 +222,7 @@ function BaseEnemy ( opt, lvl ) {
 		this.enemy.dispose();
 	}
 };
+
 
 function SpawnEnemies()
 {

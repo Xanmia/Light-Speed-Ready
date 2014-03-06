@@ -139,18 +139,18 @@ var enemiesDEF = [
 	baseHealth: 400,
 	healthIncrease: 30,
 	speed: .7,
-	reSpawn: true,
+	reSpawn: false,
 	value: 15,
 	size: 15,
 	refreshtime:1.0,
 	lastupdate:0,
 	damage:5,
 	init: function(){
+
 		this.enemyBullet = [];
 		this.enemy = enemyship.clone("test");
 		this.radar = radar.clone("radar");
 		this.radar.parent = this.enemy;
-		
 	  	this.radar.rotation.x += Math.PI/2;
 	  	this.radar.rotation.z += Math.PI *.5;
 
