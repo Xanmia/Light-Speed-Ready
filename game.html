@@ -492,6 +492,7 @@
    document.onkeyup = handleKeyUp;
 
   function handleKeyUp(event){
+	if(loaded){
       if(event.keyCode == 68 || event.keyCode == 39){
   		 right = false;
 		 //console.log("right");
@@ -508,10 +509,11 @@
 		 // console.log("down");
   		 down = false;
       }
-  	
+  	}
   }
 
   function handleKeyDown(event) {
+   if(loaded){
     if(event.keyCode == 68 || event.keyCode == 39){
       if(loaded==true){
 		 right = true;
@@ -541,17 +543,14 @@
 		PauseGame(!pause)
 	}
 
+   }
   }	
   window.onblur = function() {
-	  PauseGame(true)
+	  if(loaded){
+	  	PauseGame(true)
+	  }
+
   };
-  
-  window.addEventListener("mousemove", function (evt) {
-     var pickResult = scene.pick(evt.clientX, evt.clientY);
-			//fulldirectiontest = Math.atan2( pickResult.pickedPoint.x*-1, pickResult.pickedPoint.z*-1 );
-			//fulldirectiontest = Math.atan2( evt.clientX*-1, evt.clientY*-1 );
-	  // player.Graphic.rotation.y =  fulldirectiontest  ;
-  });
   
   function PauseGame(status)
   {
